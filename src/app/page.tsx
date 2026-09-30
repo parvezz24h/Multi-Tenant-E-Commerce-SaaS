@@ -13,7 +13,7 @@ const FEATURES = [
   },
   {
     icon: Banknote,
-    title: "Cash on Delivery first",
+    title: "Cash on Delivery First",
     body: "Take COD orders from day one. bKash, Nagad and SSLCommerz are on the way.",
   },
   {
