@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: shopbd-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: shopbd
+      POSTGRES_PASSWORD: shopbd
+      POSTGRES_DB: shopbd
+    ports:
+      - "5433:5432"
+    volumes:
+      - shopbd-pgdata:/var/lib/postgresql/data
+
+volumes:
+  shopbd-pgdata:

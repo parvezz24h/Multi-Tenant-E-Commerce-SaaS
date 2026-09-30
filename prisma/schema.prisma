@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────
+
+/// Platform-wide role. Store-level roles live on StoreMember.
+enum PlatformRole {
+  USER
+  SUPER_ADMIN
+}
+
+/// Role of a user inside a single store (tenant).
+enum StoreRole {
+  STORE_OWNER
+  STORE_ADMIN
+}
+
+enum StoreStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+}
+
+// ─────────────────────────────────────────────────────────────
+// Auth (managed by Better Auth)
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String       @id
+  name          String
+  email         String       @unique
+  emailVerified Boolean      @default(false)
+  image         String?
+  platformRole  PlatformRole @default(USER)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  sessions     Session[]
+  accounts     Account[]
+  memberships  StoreMember[]
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Tenancy
+// ─────────────────────────────────────────────────────────────
+
+/// A store is a tenant. Every tenant-owned entity carries `storeId`.
+model Store {
+  id           String      @id @default(cuid())
+  name         String
+  /// Used for the platform subdomain: `<slug>.shopbd.com`.
+  slug         String      @unique
+  status       StoreStatus @default(DRAFT)
+  description  String?
+  logoUrl      String?
+  contactEmail String?
+  contactPhone String?
+  addressLine  String?
+  district     String?
+  currency     String      @default("BDT")
+  timezone     String      @default("Asia/Dhaka")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  members   StoreMember[]
+  auditLogs AuditLog[]
+
+  @@map("stores")
+}
+
+model StoreMember {
+  id        String    @id @default(cuid())
+  storeId   String
+  userId    String
+  role      StoreRole
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, userId])
+  @@index([userId])
+  @@map("store_members")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Audit
+// ─────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  /// Null for platform-level events.
+  storeId    String?
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  store Store? @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  actor User?  @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, createdAt])
+  @@index([actorId])
+  @@map("audit_logs")
+}
