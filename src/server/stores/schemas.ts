@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { BD_DISTRICTS } from "@/lib/bd-districts";
+import { HEX_COLOR } from "@/lib/color";
 
 /**
  * Slugs become platform subdomains (`<slug>.shopbd.com`), so they follow
@@ -76,6 +77,17 @@ const storeName = z
 // Bangladeshi mobile numbers: 01XXXXXXXXX, optionally prefixed by +880/880.
 const BD_PHONE = /^(?:\+?880|0)1[3-9]\d{8}$/;
 
+/** A taka amount typed by a merchant ("60" or "60.50") → minor units (poisha). */
+const takaAmount = z
+  .string()
+  .trim()
+  .regex(/^\d{1,5}(\.\d{1,2})?$/, "Enter an amount in taka, e.g. 60.")
+  .transform((v) => Math.round(Number(v) * 100));
+
+const httpsUrl = z
+  .union([z.literal(""), z.url({ protocol: /^https$/, error: "Must be an https:// URL." })])
+  .transform((v) => v || null);
+
 export const createStoreSchema = z.object({
   name: storeName,
   slug: slugSchema,
@@ -85,9 +97,7 @@ export const updateStoreSchema = z.object({
   name: storeName,
   slug: slugSchema,
   description: optionalText(500),
-  logoUrl: z
-    .union([z.literal(""), z.url({ protocol: /^https$/, error: "Must be an https:// URL." })])
-    .transform((v) => v || null),
+  logoUrl: httpsUrl,
   contactEmail: z
     .union([z.literal(""), z.email("Enter a valid email address.")])
     .transform((v) => v || null),
@@ -103,7 +113,24 @@ export const updateStoreSchema = z.object({
     .trim()
     .refine((v) => v === "" || BD_DISTRICTS.includes(v), "Choose a district from the list.")
     .transform((v) => v || null),
+  deliveryChargeInsideDhaka: takaAmount,
+  deliveryChargeOutsideDhaka: takaAmount,
+});
+
+export const updateStoreThemeSchema = z.object({
+  themeKey: z.string().trim().min(1).max(40),
+  primaryColor: z
+    .string()
+    .trim()
+    .regex(HEX_COLOR, "Use a hex color like #0f766e.")
+    .transform((v) => v.toLowerCase()),
+  heroTitle: optionalText(80),
+  heroSubtitle: optionalText(200),
+  heroImageUrl: httpsUrl,
+  announcement: optionalText(120),
+  footerText: optionalText(200),
 });
 
 export type CreateStoreInput = z.infer<typeof createStoreSchema>;
 export type UpdateStoreInput = z.infer<typeof updateStoreSchema>;
+export type UpdateStoreThemeInput = z.infer<typeof updateStoreThemeSchema>;

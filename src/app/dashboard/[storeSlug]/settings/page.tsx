@@ -32,6 +32,8 @@ export default async function StoreSettingsPage({
           contactPhone: store.contactPhone ?? "",
           addressLine: store.addressLine ?? "",
           district: store.district ?? "",
+          deliveryChargeInsideDhaka: String(store.deliveryChargeInsideDhaka / 100),
+          deliveryChargeOutsideDhaka: String(store.deliveryChargeOutsideDhaka / 100),
         }}
       />
     </div>

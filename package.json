@@ -15,6 +15,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "make-admin": "tsx scripts/make-super-admin.ts",
+    "seed:demo": "tsx scripts/seed-demo-catalog.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

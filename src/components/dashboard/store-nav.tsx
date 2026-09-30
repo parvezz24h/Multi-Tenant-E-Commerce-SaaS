@@ -30,7 +30,7 @@ function navItems(base: string): NavItem[] {
     { label: "Customers", icon: Users },
     { label: "Inventory", icon: Boxes },
     { label: "Coupons", icon: Ticket },
-    { label: "Store design", icon: Palette },
+    { label: "Store design", icon: Palette, href: `${base}/design` },
     { label: "Domain", icon: Globe },
     { label: "Payments", icon: Wallet },
     { label: "Subscription", icon: CreditCard },

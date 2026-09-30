@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { slugify, slugSchema, updateStoreSchema } from "@/server/stores/schemas";
+import {
+  slugify,
+  slugSchema,
+  updateStoreSchema,
+  updateStoreThemeSchema,
+} from "@/server/stores/schemas";
 
 describe("slugSchema", () => {
   it.each(["rahim-fashion", "shop24", "abc"])("accepts %s", (slug) => {
@@ -43,6 +48,8 @@ describe("updateStoreSchema", () => {
     contactPhone: "",
     addressLine: "",
     district: "",
+    deliveryChargeInsideDhaka: "60",
+    deliveryChargeOutsideDhaka: "120",
   };
 
   it("turns empty optional fields into null", () => {
@@ -65,9 +72,41 @@ describe("updateStoreSchema", () => {
     expect(updateStoreSchema.safeParse({ ...base, district: "Atlantis" }).success).toBe(false);
   });
 
+  it("converts delivery charges from taka to poisha", () => {
+    const parsed = updateStoreSchema.parse({ ...base, deliveryChargeInsideDhaka: "60.5" });
+    expect(parsed.deliveryChargeInsideDhaka).toBe(6050);
+    expect(parsed.deliveryChargeOutsideDhaka).toBe(12000);
+  });
+
+  it.each(["", "-10", "abc", "1.234", "999999"])("rejects delivery charge %s", (value) => {
+    expect(updateStoreSchema.safeParse({ ...base, deliveryChargeInsideDhaka: value }).success).toBe(false);
+  });
+
   it("requires https logo URLs", () => {
     expect(updateStoreSchema.safeParse({ ...base, logoUrl: "https://x.com/a.png" }).success).toBe(true);
     expect(updateStoreSchema.safeParse({ ...base, logoUrl: "http://x.com/a.png" }).success).toBe(false);
     expect(updateStoreSchema.safeParse({ ...base, logoUrl: "javascript:alert(1)" }).success).toBe(false);
+  });
+});
+
+describe("updateStoreThemeSchema", () => {
+  const base = {
+    themeKey: "modern",
+    primaryColor: "#0F766E",
+    heroTitle: "",
+    heroSubtitle: "",
+    heroImageUrl: "",
+    announcement: "",
+    footerText: "",
+  };
+
+  it("normalizes color and blanks", () => {
+    const parsed = updateStoreThemeSchema.parse(base);
+    expect(parsed.primaryColor).toBe("#0f766e");
+    expect(parsed.heroTitle).toBeNull();
+  });
+
+  it.each(["red", "#fff", "#12345g", "url(javascript:x)"])("rejects color %s", (color) => {
+    expect(updateStoreThemeSchema.safeParse({ ...base, primaryColor: color }).success).toBe(false);
   });
 });

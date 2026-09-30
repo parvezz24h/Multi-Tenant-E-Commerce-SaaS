@@ -5,8 +5,9 @@ import { db } from "@/lib/db";
 import { recordAudit } from "@/server/audit/log";
 import { AppError } from "@/server/errors";
 import type { StoreContext } from "@/server/tenant/context";
+import { THEMES } from "@/themes/registry";
 
-import type { CreateStoreInput, UpdateStoreInput } from "./schemas";
+import type { CreateStoreInput, UpdateStoreInput, UpdateStoreThemeInput } from "./schemas";
 
 /** MVP: each user owns one store. Will move to plan limits in Phase 5. */
 export const MAX_OWNED_STORES_PER_USER = 1;
@@ -120,5 +121,43 @@ export async function setStorePublished(ctx: StoreContext, published: boolean) {
       tx,
     );
     return store;
+  });
+}
+
+export async function getSetupProgress(storeId: string) {
+  const [themes, products] = await Promise.all([
+    db.storeTheme.count({ where: { storeId } }),
+    db.product.count({ where: { storeId, status: "ACTIVE" } }),
+  ]);
+  return { hasTheme: themes > 0, hasProducts: products > 0 };
+}
+
+export async function getStoreTheme(storeId: string) {
+  return db.storeTheme.findUnique({ where: { storeId } });
+}
+
+export async function updateStoreTheme(ctx: StoreContext, input: UpdateStoreThemeInput) {
+  if (!Object.hasOwn(THEMES, input.themeKey)) {
+    throw new AppError("INVALID", "Choose a theme from the list.", "themeKey");
+  }
+
+  return db.$transaction(async (tx) => {
+    const theme = await tx.storeTheme.upsert({
+      where: { storeId: ctx.store.id },
+      create: { storeId: ctx.store.id, ...input },
+      update: input,
+    });
+    await recordAudit(
+      {
+        storeId: ctx.store.id,
+        actorId: ctx.user.id,
+        action: "store.theme_updated",
+        entityType: "StoreTheme",
+        entityId: theme.id,
+        metadata: { themeKey: input.themeKey },
+      },
+      tx,
+    );
+    return theme;
   });
 }

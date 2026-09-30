@@ -29,6 +29,8 @@ type Defaults = {
   contactPhone: string;
   addressLine: string;
   district: string;
+  deliveryChargeInsideDhaka: string;
+  deliveryChargeOutsideDhaka: string;
 };
 
 type Props = {
@@ -149,6 +151,29 @@ export function StoreSettingsForm({ storeId, districts, defaults }: Props) {
                 ))}
               </SelectContent>
             </Select>
+          </FormField>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Delivery charges</CardTitle>
+          <CardDescription>Added to each order at checkout, in taka.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-2">
+          <FormField
+            id="deliveryChargeInsideDhaka"
+            label="Inside Dhaka (৳)"
+            errors={errors.deliveryChargeInsideDhaka}
+          >
+            <Input {...field("deliveryChargeInsideDhaka")} inputMode="decimal" required />
+          </FormField>
+          <FormField
+            id="deliveryChargeOutsideDhaka"
+            label="Outside Dhaka (৳)"
+            errors={errors.deliveryChargeOutsideDhaka}
+          >
+            <Input {...field("deliveryChargeOutsideDhaka")} inputMode="decimal" required />
           </FormField>
         </CardContent>
       </Card>

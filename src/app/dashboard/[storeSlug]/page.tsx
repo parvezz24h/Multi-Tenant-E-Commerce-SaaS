@@ -1,11 +1,14 @@
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PublishToggle } from "@/components/stores/publish-toggle";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { storeUrl } from "@/lib/hosts";
 import { storeHostname } from "@/lib/site";
 import { STORE_ROLE_LABELS } from "@/server/rbac/permissions";
+import { getSetupProgress } from "@/server/stores/service";
 import { getStoreContext } from "@/server/tenant/context";
 
 export async function generateMetadata({
@@ -18,6 +21,7 @@ export async function generateMetadata({
 export default async function StoreOverviewPage({ params }: PageProps<"/dashboard/[storeSlug]">) {
   const { storeSlug } = await params;
   const { store, role, can } = await getStoreContext(storeSlug);
+  const progress = await getSetupProgress(store.id);
 
   const checklist = [
     {
@@ -25,18 +29,31 @@ export default async function StoreOverviewPage({ params }: PageProps<"/dashboar
       done: Boolean(store.contactPhone && store.district),
       href: `/dashboard/${store.slug}/settings`,
     },
-    { label: "Choose a theme", done: false },
-    { label: "Add your first product", done: false },
+    {
+      label: "Choose a theme",
+      done: progress.hasTheme,
+      href: `/dashboard/${store.slug}/design`,
+    },
+    { label: "Add your first product", done: progress.hasProducts },
     { label: "Publish your store", done: store.status === "ACTIVE" },
   ];
 
   return (
     <div className="grid gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{store.name}</h1>
-        <p className="text-sm text-muted-foreground">
-          {storeHostname(store.slug)} · You are {STORE_ROLE_LABELS[role].toLowerCase()}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{store.name}</h1>
+          <p className="text-sm text-muted-foreground">
+            {storeHostname(store.slug)} · You are {STORE_ROLE_LABELS[role].toLowerCase()}
+          </p>
+        </div>
+        {store.status === "ACTIVE" && (
+          <Button variant="outline" asChild>
+            <a href={storeUrl(store.slug)} target="_blank" rel="noopener noreferrer">
+              View store <ExternalLink />
+            </a>
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -76,7 +93,7 @@ export default async function StoreOverviewPage({ params }: PageProps<"/dashboar
             <CardTitle>Store visibility</CardTitle>
             <CardDescription>
               {store.status === "ACTIVE"
-                ? "Your store is live. Customers can visit it once storefronts launch."
+                ? "Your store is live. Customers can browse products and add them to their cart."
                 : "Your store is a draft and hidden from customers."}
             </CardDescription>
           </CardHeader>
