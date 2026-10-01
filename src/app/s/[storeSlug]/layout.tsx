@@ -15,6 +15,13 @@ export async function generateMetadata({
     title: { default: store.name, template: `%s · ${store.name}` },
     description: store.description ?? undefined,
     robots: (await isStoreOpen(store)) ? undefined : { index: false, follow: false },
+    // Replaces the platform's preview so shared store links show the store.
+    openGraph: {
+      siteName: store.name,
+      title: store.name,
+      description: store.description ?? undefined,
+      images: store.logoUrl ? [{ url: store.logoUrl, alt: store.name }] : [],
+    },
   };
 }
 

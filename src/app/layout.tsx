@@ -17,8 +17,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
   description: siteConfig.description,
+  // Link previews (Facebook, WhatsApp…) for platform pages. Storefronts
+  // replace this with their own store's details in their layout.
+  openGraph: {
+    siteName: siteConfig.name,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: siteConfig.name }],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

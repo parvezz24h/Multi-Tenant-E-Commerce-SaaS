@@ -1,7 +1,7 @@
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site";
 
 const NAV = [
   { href: "#features", label: "Features" },
@@ -11,17 +11,7 @@ const NAV = [
 ];
 
 export function Logo() {
-  return (
-    <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-      <span
-        aria-hidden
-        className="flex size-7 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground"
-      >
-        S
-      </span>
-      {siteConfig.name}
-    </Link>
-  );
+  return <BrandLogo priority />;
 }
 
 export function SiteHeader({ signedIn }: { signedIn: boolean }) {

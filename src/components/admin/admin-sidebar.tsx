@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, Layers, LayoutDashboard, ReceiptText, Shield, Store, Users } from "lucide-react";
+import { ArrowLeft, Layers, LayoutDashboard, ReceiptText, Store, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { BrandMark, BrandName } from "@/components/brand";
 import { SidebarUserMenu, type SidebarUser } from "@/components/dashboard/sidebar-user-menu";
 import {
   Sidebar,
@@ -20,7 +21,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { siteConfig } from "@/lib/site";
 
 const ITEMS = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
@@ -41,11 +41,9 @@ export function AdminSidebar({ user, invoicesToReview }: { user: SidebarUser; in
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/admin">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Shield className="size-4" />
-                </div>
+                <BrandMark />
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{siteConfig.name}</span>
+                  <BrandName className="truncate" />
                   <span className="truncate text-xs text-muted-foreground">Platform admin</span>
                 </div>
               </Link>
