@@ -2,6 +2,8 @@ export const siteConfig = {
   name: "ShopCreatorBD",
   description: "Launch your own online store in minutes — built for Bangladeshi businesses.",
   rootDomain: process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "shopcreatorbd.vercel.app",
+  /** A real store on the platform, linked from the landing page as a live demo. */
+  demoStore: { url: "https://www.motkhola.com", host: "www.motkhola.com", name: "Rahim Fashion" },
   /** Platform contact details shown on /contact. */
   contact: {
     email: "parvezz24h@gmail.com",

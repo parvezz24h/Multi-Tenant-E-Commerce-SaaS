@@ -2,6 +2,7 @@ import {
   ArrowRight,
   Banknote,
   Boxes,
+  ExternalLink,
   Globe,
   MapPin,
   Palette,
@@ -137,7 +138,9 @@ export default async function Home() {
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <a href="#how-it-works">See how it works</a>
+                  <a href={siteConfig.demoStore.url} target="_blank" rel="noopener noreferrer">
+                    View live demo <ExternalLink />
+                  </a>
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -146,9 +149,6 @@ export default async function Home() {
             </div>
             <div className="lg:pl-6">
               <StorePreview />
-              <span className="sr-only">
-                Illustration: a sample online store with products and a new Cash on Delivery order.
-              </span>
             </div>
           </div>
         </section>
@@ -195,6 +195,17 @@ export default async function Home() {
                 </li>
               ))}
             </ol>
+            <p className="text-center text-sm text-muted-foreground">
+              Want to see one first?{" "}
+              <a
+                href={siteConfig.demoStore.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-primary hover:underline"
+              >
+                Visit our demo store, {siteConfig.demoStore.name} →
+              </a>
+            </p>
           </div>
         </section>
 
