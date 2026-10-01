@@ -119,7 +119,7 @@ export default async function Home() {
           <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:grid-cols-[1fr_1.1fr] lg:pt-24">
             <div className="grid justify-items-start gap-6">
               <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
-                <span className="size-1.5 rounded-full bg-emerald-500" />
+                <span className="size-1.5 rounded-full bg-primary" />
                 Built for Bangladeshi sellers
               </span>
               <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
@@ -164,7 +164,7 @@ export default async function Home() {
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {features.map(({ icon: Icon, title, body }) => (
                 <li key={title} className="grid content-start gap-3 rounded-2xl border bg-background p-6">
-                  <span className="flex size-10 items-center justify-center rounded-lg border bg-muted/50">
+                  <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Icon className="size-5" aria-hidden />
                   </span>
                   <h3 className="font-semibold">{title}</h3>
@@ -186,7 +186,7 @@ export default async function Home() {
             <ol className="grid gap-6 md:grid-cols-3">
               {STEPS.map((step, i) => (
                 <li key={step.title} className="grid content-start gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-full bg-foreground text-sm font-semibold text-background">
+                  <span className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                     {i + 1}
                   </span>
                   <h3 className="text-lg font-semibold">{step.title}</h3>
@@ -237,11 +237,11 @@ export default async function Home() {
 
         {/* Final call to action */}
         <section className="px-4 pb-24 sm:px-6 lg:px-8">
-          <div className="mx-auto grid w-full max-w-7xl justify-items-center gap-6 rounded-3xl bg-foreground px-6 py-16 text-center text-background">
+          <div className="mx-auto grid w-full max-w-7xl justify-items-center gap-6 rounded-3xl bg-primary px-6 py-16 text-center text-primary-foreground">
             <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
               Your customers are already online. Is your store?
             </h2>
-            <p className="max-w-xl text-background/70">
+            <p className="max-w-xl text-primary-foreground/80">
               Start free today. Set up your store in minutes and take your first Cash on Delivery order this week.
             </p>
             <Button size="lg" variant="secondary" asChild>

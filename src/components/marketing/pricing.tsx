@@ -46,11 +46,11 @@ export function Pricing({ plans, signedIn }: { plans: Plan[]; signedIn: boolean 
             key={plan.key}
             className={cn(
               "relative flex flex-col gap-6 rounded-2xl border bg-background p-6",
-              featured && "border-foreground shadow-xl shadow-foreground/5",
+              featured && "border-primary shadow-xl shadow-primary/10",
             )}
           >
             {featured && (
-              <span className="absolute -top-3 left-6 rounded-full bg-foreground px-3 py-1 text-xs font-medium text-background">
+              <span className="absolute -top-3 left-6 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
                 Most popular
               </span>
             )}

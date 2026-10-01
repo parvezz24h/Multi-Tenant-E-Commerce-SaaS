@@ -23,7 +23,16 @@ export function OrderStatusBadge({ status }: { status: OrderStatus }) {
 
 export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   return (
-    <Badge variant={status === "PAID" ? "default" : "outline"}>{PAYMENT_STATUS_LABELS[status]}</Badge>
+    // Status colors are semantic (paid = good), not the brand color.
+    <Badge
+      variant="outline"
+      className={cn(
+        status === "PAID" && "border-transparent bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200",
+        status === "REFUNDED" && "border-transparent bg-muted text-muted-foreground",
+      )}
+    >
+      {PAYMENT_STATUS_LABELS[status]}
+    </Badge>
   );
 }
 

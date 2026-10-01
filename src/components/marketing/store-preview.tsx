@@ -68,7 +68,7 @@ export function StorePreview() {
       {/* Floating order notification */}
       <div className="absolute -bottom-6 -left-4 hidden w-64 rounded-xl border bg-background p-4 shadow-xl shadow-foreground/10 sm:block lg:-left-10">
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" />
+          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
           <div className="grid gap-0.5">
             <p className="text-sm font-semibold">New order #1042</p>
             <p className="text-xs text-muted-foreground">Mirpur, Dhaka · Cash on delivery</p>

@@ -198,3 +198,32 @@ export async function getOrderStats(storeId: string) {
     recent,
   };
 }
+
+export type DailySales = { day: string; total: number; orders: number };
+
+/**
+ * Sales per Dhaka calendar day for the last `days` days (oldest first),
+ * excluding cancelled and returned orders. Days without orders are zero.
+ */
+export async function getDailySales(storeId: string, days = 14): Promise<DailySales[]> {
+  const today = startOfDhakaDay();
+  const since = new Date(today.getTime() - (days - 1) * 86_400_000);
+
+  const rows = await db.$queryRaw<{ day: Date; total: number; orders: number }[]>`
+    select ((o."createdAt" at time zone 'UTC') at time zone 'Asia/Dhaka')::date as day,
+           coalesce(sum(o.total), 0)::int as total,
+           count(*)::int as orders
+      from orders o
+     where o."storeId" = ${storeId}
+       and o."createdAt" >= ${since}
+       and o.status not in ('CANCELLED', 'RETURNED')
+     group by 1`;
+
+  const byDay = new Map(rows.map((r) => [r.day.toISOString().slice(0, 10), r]));
+  return Array.from({ length: days }, (_, i) => {
+    // `since` is Dhaka midnight as UTC; +6h lands on the same calendar date in UTC.
+    const day = new Date(since.getTime() + i * 86_400_000 + 6 * 3_600_000).toISOString().slice(0, 10);
+    const row = byDay.get(day);
+    return { day, total: row?.total ?? 0, orders: row?.orders ?? 0 };
+  });
+}

@@ -15,7 +15,7 @@ export function Logo() {
     <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
       <span
         aria-hidden
-        className="flex size-7 items-center justify-center rounded-lg bg-foreground text-sm font-bold text-background"
+        className="flex size-7 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground"
       >
         S
       </span>
