@@ -648,3 +648,30 @@ model AuditLog {
   @@index([actorId])
   @@map("audit_logs")
 }
+
+// ─────────────────────────────────────────────────────────────
+// Platform contact form
+// ─────────────────────────────────────────────────────────────
+
+enum ContactMessageStatus {
+  NEW
+  READ
+}
+
+/// A message sent from the public /contact page, read by platform admins.
+model ContactMessage {
+  id        String               @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  topic     String
+  message   String
+  status    ContactMessageStatus @default(NEW)
+  /// Used to rate-limit submissions per visitor.
+  ipAddress String?
+  createdAt DateTime             @default(now())
+
+  @@index([status, createdAt])
+  @@index([ipAddress, createdAt])
+  @@map("contact_messages")
+}

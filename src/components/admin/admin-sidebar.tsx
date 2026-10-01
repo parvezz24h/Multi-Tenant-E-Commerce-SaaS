@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Layers, LayoutDashboard, ReceiptText, Store, Users } from "lucide-react";
+import { ArrowLeft, Inbox, Layers, LayoutDashboard, ReceiptText, Store, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -28,9 +28,18 @@ const ITEMS = [
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Billing", href: "/admin/billing", icon: ReceiptText },
   { label: "Plans", href: "/admin/plans", icon: Layers },
+  { label: "Messages", href: "/admin/messages", icon: Inbox },
 ];
 
-export function AdminSidebar({ user, invoicesToReview }: { user: SidebarUser; invoicesToReview: number }) {
+export function AdminSidebar({
+  user,
+  invoicesToReview,
+  newMessages,
+}: {
+  user: SidebarUser;
+  invoicesToReview: number;
+  newMessages: number;
+}) {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
 
@@ -70,6 +79,12 @@ export function AdminSidebar({ user, invoicesToReview }: { user: SidebarUser; in
                       <SidebarMenuBadge className="rounded-full bg-primary text-primary-foreground">
                         {invoicesToReview}
                         <span className="sr-only"> to verify</span>
+                      </SidebarMenuBadge>
+                    )}
+                    {href === "/admin/messages" && newMessages > 0 && (
+                      <SidebarMenuBadge className="rounded-full bg-primary text-primary-foreground">
+                        {newMessages}
+                        <span className="sr-only"> new</span>
                       </SidebarMenuBadge>
                     )}
                   </SidebarMenuItem>

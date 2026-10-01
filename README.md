@@ -63,6 +63,13 @@ which is enough for local development. Merchants add a CNAME
 Store subdomains (`<slug>.<root domain>`) need a domain you own with a wildcard
 record; they don't work on `*.vercel.app`.
 
+### Contact form
+
+Messages sent from **/contact** are saved in the database and appear on
+**/admin/messages**, with a count of new ones in the admin sidebar. Each visitor
+(by IP) can send 5 messages per hour, and a hidden honeypot field filters bots.
+Nothing is emailed; reply from your own email client.
+
 ### File storage (product images)
 
 Locally, uploads go to `./.uploads` (`STORAGE_DRIVER=local`). In production use
@@ -155,6 +162,7 @@ src/server/                 Server-only application modules
   catalog/                  Products, categories, images, inventory (merchant side)
   orders/                   Order list/detail, status transitions, restocking
   customers/                Customer list/detail
+  contact/                  Contact form messages (saved for /admin/messages)
   storage/                  File storage (local disk or S3/R2) + image validation
   audit/                    Audit log writer
 src/components/             UI (shadcn/ui in components/ui)
