@@ -63,6 +63,10 @@ export async function countOrdersByStatus(storeId: string) {
   return Object.fromEntries(rows.map((r) => [r.status, r._count])) as Partial<Record<OrderStatus, number>>;
 }
 
+export async function countPendingOrders(storeId: string) {
+  return db.order.count({ where: { storeId, status: "PENDING" } });
+}
+
 export async function getOrder(storeId: string, orderNumber: number) {
   const order = await db.order.findUnique({
     where: { storeId_orderNumber: { storeId, orderNumber } },

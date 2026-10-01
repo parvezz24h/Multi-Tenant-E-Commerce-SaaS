@@ -116,10 +116,18 @@ export default async function CartPage({ params, searchParams }: PageProps<"/s/[
             </div>
           </dl>
 
-          <Button size="lg" disabled className="w-full">
-            Checkout — coming soon
-          </Button>
-          <p className="text-center text-xs text-muted-foreground">Cash on delivery will be available.</p>
+          {cart.lines.every((l) => l.available) ? (
+            <Button size="lg" asChild className="w-full">
+              <Link href="/checkout">Checkout</Link>
+            </Button>
+          ) : (
+            <Button size="lg" disabled className="w-full">
+              Remove unavailable items to check out
+            </Button>
+          )}
+          <p className="text-center text-xs text-muted-foreground">
+            Cash on delivery · delivery is set by your district at checkout.
+          </p>
         </aside>
       </div>
     </div>

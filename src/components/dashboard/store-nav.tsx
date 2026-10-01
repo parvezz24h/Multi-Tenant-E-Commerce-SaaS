@@ -40,7 +40,14 @@ function navItems(base: string): NavItem[] {
   ];
 }
 
-export function StoreNav({ storeSlug }: { storeSlug: string }) {
+export function StoreNav({
+  storeSlug,
+  pendingOrders = 0,
+}: {
+  storeSlug: string;
+  /** New orders waiting for confirmation, shown as a badge on "Orders". */
+  pendingOrders?: number;
+}) {
   const pathname = usePathname();
   const base = `/dashboard/${storeSlug}`;
 
@@ -81,6 +88,12 @@ export function StoreNav({ storeSlug }: { storeSlug: string }) {
           >
             <Icon className="size-4" aria-hidden />
             {label}
+            {label === "Orders" && pendingOrders > 0 && (
+              <span className="ml-auto rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground tabular-nums">
+                {pendingOrders > 99 ? "99+" : pendingOrders}
+                <span className="sr-only"> pending</span>
+              </span>
+            )}
           </Link>
         );
       })}

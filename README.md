@@ -3,9 +3,9 @@
 Multi-tenant SaaS for single-vendor e-commerce stores, built for Bangladesh.
 See [Project Plan.md](./Project%20Plan.md) for the full roadmap.
 
-**Status:** Phase 3 — Merchant management (products, categories, images, inventory, orders,
-customers, dashboard). Done before it: Phase 1 (auth, stores, RBAC, tenant context, platform admin)
-and Phase 2 (host-based storefront, Modern theme, catalog browsing, guest cart).
+**Status:** Phase 4 — Checkout (COD orders with Bangladesh addresses, delivery charge by
+district, order confirmation and tracking). Done before it: Phase 1 (auth, stores, RBAC, tenant
+context), Phase 2 (storefront, theme, cart) and Phase 3 (merchant management).
 
 ## Stack
 
@@ -84,6 +84,7 @@ src/server/                 Server-only application modules
   admin/                    Platform admin service + actions
   storefront/               Public catalog queries (ACTIVE stores/products only)
   cart/                     Guest cart (per-store httpOnly cookie)
+  checkout/                 COD order placement, confirmation and tracking lookups
   catalog/                  Products, categories, images, inventory (merchant side)
   orders/                   Order list/detail, status transitions, restocking
   customers/                Customer list/detail
@@ -118,3 +119,8 @@ Every store is a tenant; tenant-owned rows carry `storeId`.
    which updates the count atomically, refuses to go below zero and writes an
    `InventoryAdjustment`. Order status changes follow `ORDER_TRANSITIONS`
    (src/lib/order-status.ts); cancelling or returning an order restocks its items.
+9. **Checkout** (src/server/checkout/service.ts) re-reads prices and stock from the
+   database and places the order in one transaction: stock, order number, customer,
+   items and cart deletion all succeed or none do. Customers reach their order only
+   through an unguessable `publicToken` link, or by entering the order number together
+   with the phone number it was placed with.

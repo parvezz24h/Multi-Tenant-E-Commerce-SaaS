@@ -1,4 +1,5 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Package, Phone } from "lucide-react";
+import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
 import type { ThemeFooterProps } from "@/themes/types";
@@ -17,6 +18,12 @@ export function ModernFooter({ store, theme }: ThemeFooterProps) {
           {theme.footerText && <p className="text-sm text-muted-foreground">{theme.footerText}</p>}
         </div>
         <ul className="grid content-start gap-2 text-sm">
+          <li className="flex items-center gap-2">
+            <Package className="size-4 text-muted-foreground" aria-hidden />
+            <Link href="/track" className="hover:underline">
+              Track your order
+            </Link>
+          </li>
           {store.contactPhone && (
             <li className="flex items-center gap-2">
               <Phone className="size-4 text-muted-foreground" aria-hidden />

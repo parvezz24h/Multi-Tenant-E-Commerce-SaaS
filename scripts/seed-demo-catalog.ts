@@ -8,6 +8,8 @@
  */
 import "dotenv/config";
 
+import { randomBytes } from "node:crypto";
+
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient, type InventoryReason, type OrderStatus } from "../src/generated/prisma/client";
@@ -257,6 +259,7 @@ async function seedOrders(
         data: {
           storeId: store.id,
           orderNumber: nextOrderNumber - 1,
+          publicToken: randomBytes(24).toString("base64url"),
           customerId: customer.id,
           status,
           paymentStatus: status === "DELIVERED" ? "PAID" : "UNPAID",

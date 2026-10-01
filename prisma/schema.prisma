@@ -394,6 +394,8 @@ model Order {
   storeId       String
   /// Per-store sequence shown to merchants and customers (#1001).
   orderNumber   Int
+  /// Unguessable id for the customer's confirmation/tracking page.
+  publicToken   String        @unique
   customerId    String?
   status        OrderStatus   @default(PENDING)
   paymentMethod PaymentMethod @default(COD)
@@ -428,6 +430,7 @@ model Order {
   inventoryAdjustments InventoryAdjustment[]
 
   @@unique([storeId, orderNumber])
+  @@index([storeId, phone, createdAt])
   @@index([storeId, status, createdAt])
   @@index([storeId, createdAt])
   @@index([customerId])

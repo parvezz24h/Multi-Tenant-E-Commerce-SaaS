@@ -110,6 +110,14 @@ export const getCart = cache(async (storeId: string): Promise<CartView> => {
   };
 });
 
+/** The visitor's cart id for a store, if they have one. Used by checkout. */
+export async function getCartId(storeId: string) {
+  const token = await readCartToken(storeId);
+  if (!token) return null;
+  const cart = await db.cart.findFirst({ where: { token, storeId }, select: { id: true } });
+  return cart?.id ?? null;
+}
+
 async function requireOpenStore(storeId: string) {
   const store = await db.store.findUnique({ where: { id: storeId }, select: { status: true } });
   if (store?.status !== "ACTIVE") throw new AppError("NOT_FOUND", "This store is not available.");
