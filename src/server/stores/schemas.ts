@@ -6,7 +6,7 @@ import { BD_PHONE } from "@/lib/phone";
 import { httpsUrl, optionalText, SLUG_PATTERN, takaAmount } from "@/lib/validation";
 
 /**
- * Slugs become platform subdomains (`<slug>.shopbd.com`), so they follow
+ * Slugs become platform subdomains (`<slug>.shopcreatorbd.vercel.app`), so they follow
  * DNS label rules and must not collide with platform hostnames.
  */
 export const RESERVED_SLUGS = new Set([
@@ -26,6 +26,7 @@ export const RESERVED_SLUGS = new Set([
   "media",
   "shop",
   "shopbd",
+  "shopcreatorbd",
   "static",
   "staging",
   "status",

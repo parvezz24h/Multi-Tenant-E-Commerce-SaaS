@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import { storeSlugFromHost, storeUrl } from "@/lib/hosts";
 
 describe("storeSlugFromHost", () => {
-  const root = "shopbd.com";
+  const root = "shopcreatorbd.vercel.app";
 
   it.each([
-    ["rahim-fashion.shopbd.com", "rahim-fashion"],
-    ["Rahim-Fashion.ShopBD.com", "rahim-fashion"],
-    ["rahim-fashion.shopbd.com.", "rahim-fashion"],
+    ["rahim-fashion.shopcreatorbd.vercel.app", "rahim-fashion"],
+    ["Rahim-Fashion.ShopCreatorBD.Vercel.App", "rahim-fashion"],
+    ["rahim-fashion.shopcreatorbd.vercel.app.", "rahim-fashion"],
     ["rahim-fashion.localhost:3000", "rahim-fashion"],
     ["rahim-fashion.localhost", "rahim-fashion"],
   ])("resolves %s → %s", (host, slug) => {
@@ -16,13 +16,14 @@ describe("storeSlugFromHost", () => {
   });
 
   it.each([
-    "shopbd.com",
-    "www.shopbd.com",
-    "app.shopbd.com",
+    "shopcreatorbd.vercel.app",
+    "other-app.vercel.app",
+    "www.shopcreatorbd.vercel.app",
+    "app.shopcreatorbd.vercel.app",
     "localhost:3000",
-    "a.b.shopbd.com",
-    "evilshopbd.com",
-    "rahim.shopbd.com.evil.com",
+    "a.b.shopcreatorbd.vercel.app",
+    "evilshopcreatorbd.vercel.app",
+    "rahim.shopcreatorbd.vercel.app.evil.com",
     "rahimfashion.com",
     "",
     null,
@@ -37,6 +38,6 @@ describe("storeUrl", () => {
   });
 
   it("uses the root domain in production", () => {
-    expect(storeUrl("rahim", "https://shopbd.com")).toMatch(/^https:\/\/rahim\./);
+    expect(storeUrl("rahim", "https://shopcreatorbd.vercel.app")).toMatch(/^https:\/\/rahim\./);
   });
 });

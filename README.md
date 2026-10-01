@@ -1,4 +1,4 @@
-# ShopBD
+# ShopCreatorBD
 
 Multi-tenant SaaS for single-vendor e-commerce stores, built for Bangladesh.
 See [Project Plan.md](./Project%20Plan.md) for the full roadmap.
@@ -110,7 +110,7 @@ Every store is a tenant; tenant-owned rows carry `storeId`.
 5. **Platform admin** is a separate `platformRole` on `User`. It is re-read from
    the database on every admin request and can't be set at sign-up.
 6. Changes to tenant data write an `AuditLog` row in the same transaction.
-7. **Storefronts** are resolved from the hostname (`<slug>.shopbd.com`, or
+7. **Storefronts** are resolved from the hostname (`<slug>.shopcreatorbd.vercel.app`, or
    `<slug>.localhost` in development) in `src/proxy.ts`. `/s/...` is not
    reachable on the platform host. Storefront queries only return ACTIVE
    products of ACTIVE stores, and cart actions re-check that the product

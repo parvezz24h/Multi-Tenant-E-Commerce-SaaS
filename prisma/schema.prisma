@@ -142,7 +142,7 @@ model Verification {
 model Store {
   id                         String      @id @default(cuid())
   name                       String
-  /// Used for the platform subdomain: `<slug>.shopbd.com`.
+  /// Used for the platform subdomain: `<slug>.shopcreatorbd.vercel.app`.
   slug                       String      @unique
   status                     StoreStatus @default(DRAFT)
   description                String?

@@ -1,4 +1,4 @@
-# Multi-Tenant Single-Vendor E-Commerce SaaS
+# ShopCreatorBD — Multi-Tenant Single-Vendor E-Commerce SaaS
 
 ## Project Plan
 
@@ -22,9 +22,9 @@ Example:
 ```text
 Platform
     │
-    ├── rahim.shopbd.com
-    ├── karim.shopbd.com
-    └── sadia.shopbd.com
+    ├── rahim.shopcreatorbd.vercel.app
+    ├── karim.shopcreatorbd.vercel.app
+    └── sadia.shopcreatorbd.vercel.app
 ```
 
 Later:
@@ -265,19 +265,19 @@ store-slug.platform.com
 Example:
 
 ```text
-rahim-fashion.shopbd.com
+rahim-fashion.shopcreatorbd.vercel.app
 ```
 
 A wildcard DNS record will route subdomains to the application:
 
 ```text
-*.shopbd.com → Application
+*.shopcreatorbd.vercel.app → Application
 ```
 
 The application will inspect the request hostname:
 
 ```text
-rahim-fashion.shopbd.com
+rahim-fashion.shopcreatorbd.vercel.app
         ↓
 Resolve Store
         ↓
@@ -883,9 +883,9 @@ The platform can onboard paying merchants.
 Example:
 
 ```text
-rahim.shopbd.com
-karim.shopbd.com
-sadia.shopbd.com
+rahim.shopcreatorbd.vercel.app
+karim.shopcreatorbd.vercel.app
+sadia.shopcreatorbd.vercel.app
 ```
 
 ### Deliverable

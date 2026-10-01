@@ -41,7 +41,7 @@ type Props = {
   productId?: string;
   defaults: ProductFormValues;
   categories: { id: string; name: string }[];
-  /** Shown next to the URL field, e.g. "rahim.shopbd.com/products/". */
+  /** Shown next to the URL field, e.g. "rahim.shopcreatorbd.vercel.app/products/". */
   urlPrefix: string;
 };
 

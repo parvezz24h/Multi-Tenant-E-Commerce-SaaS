@@ -2,9 +2,9 @@
  * Hostname → tenant resolution. Pure and runtime-agnostic so it can run in
  * the proxy and in tests.
  *
- *   rahim-fashion.shopbd.com     → "rahim-fashion"
- *   rahim-fashion.localhost:3000 → "rahim-fashion"   (development)
- *   shopbd.com, www.shopbd.com   → null (platform)
+ *   rahim-fashion.shopcreatorbd.vercel.app → "rahim-fashion"
+ *   rahim-fashion.localhost:3000           → "rahim-fashion"   (development)
+ *   shopcreatorbd.vercel.app, www.…        → null (platform)
  *
  * Custom domains (Phase 7) will be resolved by a database lookup instead.
  */
@@ -12,7 +12,7 @@
 const PLATFORM_SUBDOMAINS = new Set(["www", "app"]);
 
 export function rootDomain() {
-  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "shopbd.com").toLowerCase();
+  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "shopcreatorbd.vercel.app").toLowerCase();
 }
 
 export function storeSlugFromHost(host: string | null | undefined, root = rootDomain()) {
@@ -22,7 +22,7 @@ export function storeSlugFromHost(host: string | null | undefined, root = rootDo
   for (const base of [root, "localhost"]) {
     if (!hostname.endsWith(`.${base}`)) continue;
     const sub = hostname.slice(0, -(base.length + 1));
-    // Only single-label subdomains are stores; `a.b.shopbd.com` is not.
+    // Only single-label subdomains are stores; `a.b.shopcreatorbd.vercel.app` is not.
     if (!sub || sub.includes(".") || PLATFORM_SUBDOMAINS.has(sub)) return null;
     return sub;
   }

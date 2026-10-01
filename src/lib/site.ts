@@ -1,10 +1,10 @@
 export const siteConfig = {
-  name: "ShopBD",
+  name: "ShopCreatorBD",
   description: "Launch your own online store in minutes — built for Bangladeshi businesses.",
-  rootDomain: process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "shopbd.com",
+  rootDomain: process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "shopcreatorbd.vercel.app",
 };
 
-/** Public platform hostname for a store, e.g. `rahim-fashion.shopbd.com`. */
+/** Public platform hostname for a store, e.g. `rahim-fashion.shopcreatorbd.vercel.app`. */
 export function storeHostname(slug: string) {
   return `${slug}.${siteConfig.rootDomain}`;
 }
