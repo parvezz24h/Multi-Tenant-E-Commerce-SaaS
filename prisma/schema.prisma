@@ -35,6 +35,36 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentMethod {
+  COD
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum InventoryReason {
+  INITIAL
+  RESTOCK
+  CORRECTION
+  DAMAGED
+  ORDER_PLACED
+  ORDER_CANCELLED
+  ORDER_RETURNED
+}
+
 // ─────────────────────────────────────────────────────────────
 // Auth (managed by Better Auth)
 // ─────────────────────────────────────────────────────────────
@@ -126,6 +156,8 @@ model Store {
   /// Delivery charges in minor units (poisha). 6000 = ৳60.
   deliveryChargeInsideDhaka  Int         @default(6000)
   deliveryChargeOutsideDhaka Int         @default(12000)
+  /// Next human-readable order number for this store (#1001, #1002…).
+  nextOrderNumber            Int         @default(1001)
   createdAt                  DateTime    @default(now())
   updatedAt                  DateTime    @updatedAt
 
@@ -135,6 +167,8 @@ model Store {
   categories Category[]
   products   Product[]
   carts      Cart[]
+  customers  Customer[]
+  orders     Order[]
 
   @@map("stores")
 }
@@ -217,10 +251,12 @@ model Product {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  store     Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  category  Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  images    ProductImage[]
-  cartItems CartItem[]
+  store                Store                 @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category             Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  images               ProductImage[]
+  cartItems            CartItem[]
+  orderItems           OrderItem[]
+  inventoryAdjustments InventoryAdjustment[]
 
   @@unique([storeId, slug])
   @@index([storeId, status, createdAt])
@@ -229,13 +265,15 @@ model Product {
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
-  storeId   String
-  productId String
-  url       String
-  alt       String?
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  storeId    String
+  productId  String
+  url        String
+  /// Object key in file storage; null for images linked by URL.
+  storageKey String?
+  alt        String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -276,6 +314,159 @@ model CartItem {
 
   @@unique([cartId, productId])
   @@map("cart_items")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Inventory
+// ─────────────────────────────────────────────────────────────
+
+/// Append-only log of every stock change. Product.stock is the running total.
+model InventoryAdjustment {
+  id         String          @id @default(cuid())
+  storeId    String
+  productId  String
+  /// Positive adds stock, negative removes it.
+  delta      Int
+  /// Stock after this adjustment.
+  stockAfter Int
+  reason     InventoryReason
+  note       String?
+  orderId    String?
+  actorId    String?
+  createdAt  DateTime        @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, createdAt])
+  @@index([productId, createdAt])
+  @@map("inventory_adjustments")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Customers & orders
+// ─────────────────────────────────────────────────────────────
+
+/// A shopper of one store, identified by phone number within that store.
+model Customer {
+  id        String   @id @default(cuid())
+  storeId   String
+  name      String
+  /// Normalized to 01XXXXXXXXX.
+  phone     String
+  email     String?
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store     Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  addresses CustomerAddress[]
+  orders    Order[]
+
+  @@unique([storeId, phone])
+  @@index([storeId, createdAt])
+  @@map("customers")
+}
+
+model CustomerAddress {
+  id          String   @id @default(cuid())
+  storeId     String
+  customerId  String
+  name        String
+  phone       String
+  district    String
+  upazila     String
+  area        String?
+  addressLine String
+  postalCode  String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("customer_addresses")
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  storeId       String
+  /// Per-store sequence shown to merchants and customers (#1001).
+  orderNumber   Int
+  customerId    String?
+  status        OrderStatus   @default(PENDING)
+  paymentMethod PaymentMethod @default(COD)
+  paymentStatus PaymentStatus @default(UNPAID)
+
+  // Amounts in minor units (poisha).
+  subtotal       Int
+  deliveryCharge Int
+  discount       Int @default(0)
+  total          Int
+
+  // Shipping snapshot: kept as placed, even if the customer changes later.
+  customerName String
+  phone        String
+  email        String?
+  district     String
+  upazila      String
+  area         String?
+  addressLine  String
+  postalCode   String?
+  customerNote String?
+  /// Internal note, only visible to the store.
+  merchantNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store                Store                 @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer             Customer?             @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items                OrderItem[]
+  events               OrderEvent[]
+  inventoryAdjustments InventoryAdjustment[]
+
+  @@unique([storeId, orderNumber])
+  @@index([storeId, status, createdAt])
+  @@index([storeId, createdAt])
+  @@index([customerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  /// Null if the product was deleted later; the snapshot below remains.
+  productId String?
+  name      String
+  sku       String?
+  unitPrice Int
+  quantity  Int
+  lineTotal Int
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+/// Status timeline for an order.
+model OrderEvent {
+  id         String       @id @default(cuid())
+  orderId    String
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  note       String?
+  actorId    String?
+  createdAt  DateTime     @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("order_events")
 }
 
 // ─────────────────────────────────────────────────────────────

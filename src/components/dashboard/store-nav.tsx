@@ -3,6 +3,7 @@
 import {
   Boxes,
   CreditCard,
+  FolderTree,
   Globe,
   LayoutDashboard,
   Package,
@@ -25,10 +26,11 @@ type NavItem = { label: string; icon: LucideIcon; href?: string };
 function navItems(base: string): NavItem[] {
   return [
     { label: "Overview", icon: LayoutDashboard, href: base },
-    { label: "Products", icon: Package },
-    { label: "Orders", icon: ShoppingCart },
-    { label: "Customers", icon: Users },
-    { label: "Inventory", icon: Boxes },
+    { label: "Orders", icon: ShoppingCart, href: `${base}/orders` },
+    { label: "Products", icon: Package, href: `${base}/products` },
+    { label: "Categories", icon: FolderTree, href: `${base}/categories` },
+    { label: "Inventory", icon: Boxes, href: `${base}/inventory` },
+    { label: "Customers", icon: Users, href: `${base}/customers` },
     { label: "Coupons", icon: Ticket },
     { label: "Store design", icon: Palette, href: `${base}/design` },
     { label: "Domain", icon: Globe },
@@ -65,7 +67,8 @@ export function StoreNav({ storeSlug }: { storeSlug: string }) {
           );
         }
 
-        const active = pathname === href;
+        // Overview is exact; sections stay active on their nested pages.
+        const active = href === base ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
         return (
           <Link
             key={label}
