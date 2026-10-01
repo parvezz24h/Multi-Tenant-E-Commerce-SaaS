@@ -17,15 +17,15 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
         <SiteNav />
         <div className="ml-auto flex items-center gap-2">
           {signedIn ? (
-            <Button asChild>
+            <Button size="lg" asChild className="px-4">
               <Link href="/dashboard">Go to dashboard</Link>
             </Button>
           ) : (
             <>
-              <Button variant="ghost" asChild className="hidden sm:inline-flex">
+              <Button size="lg" variant="ghost" asChild className="hidden px-4 sm:inline-flex">
                 <Link href="/sign-in">Sign in</Link>
               </Button>
-              <Button asChild>
+              <Button size="lg" asChild className="px-4 shadow-sm shadow-primary/25">
                 <Link href="/sign-up">Start free trial</Link>
               </Button>
             </>

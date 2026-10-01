@@ -58,9 +58,9 @@ function SinglePlan({ plan, cta }: { plan: Plan; cta: string }) {
         <p className="text-sm text-muted-foreground">
           {TRIAL_DAYS} days free, no card needed. Pay monthly or for several months at once.
         </p>
-        <Button asChild size="lg" className="justify-self-start">
+        <Button asChild size="xl" className="justify-self-start shadow-lg shadow-primary/25 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 motion-reduce:hover:translate-y-0">
           <Link href={cta}>
-            Start {TRIAL_DAYS}-day free trial <ArrowRight />
+            Start {TRIAL_DAYS}-day free trial <ArrowRight className="transition-transform group-hover/button:translate-x-0.5 motion-reduce:transition-none" />
           </Link>
         </Button>
       </div>
@@ -115,7 +115,7 @@ export function Pricing({ plans, signedIn }: { plans: Plan[]; signedIn: boolean 
                 </li>
               ))}
             </ul>
-            <Button asChild size="lg" variant={featured ? "default" : "outline"}>
+            <Button asChild size="xl" variant={featured ? "default" : "outline"}>
               <Link href={cta}>Start {TRIAL_DAYS}-day free trial</Link>
             </Button>
           </div>

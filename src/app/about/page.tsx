@@ -103,13 +103,13 @@ export default function AboutPage() {
             Start your {TRIAL_DAYS}-day free trial — no card needed.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button size="lg" variant="secondary" asChild>
+            <Button size="xl" asChild className="bg-white text-primary shadow-lg shadow-black/10 hover:-translate-y-0.5 hover:bg-white/90 hover:text-primary motion-reduce:hover:translate-y-0">
               <Link href="/sign-up">
-                Create your store <ArrowRight />
+                Create your store <ArrowRight className="transition-transform group-hover/button:translate-x-0.5 motion-reduce:transition-none" />
               </Link>
             </Button>
             <Button
-              size="lg"
+              size="xl"
               variant="ghost"
               asChild
               className="border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"

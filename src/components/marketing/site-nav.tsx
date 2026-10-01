@@ -81,15 +81,15 @@ export function MobileNav({ signedIn }: { signedIn: boolean }) {
         </nav>
         <div className="mt-4 grid gap-2 px-4">
           {signedIn ? (
-            <Button asChild>
+            <Button size="xl" asChild>
               <Link href="/dashboard">Go to dashboard</Link>
             </Button>
           ) : (
             <>
-              <Button asChild>
+              <Button size="xl" asChild>
                 <Link href="/sign-up">Start free trial</Link>
               </Button>
-              <Button variant="outline" asChild>
+              <Button size="xl" variant="outline" asChild>
                 <Link href="/sign-in">Sign in</Link>
               </Button>
             </>

@@ -164,12 +164,12 @@ export default async function Home() {
                 stock tracking — no coding, no developer.
               </p>
               <div className="enter-up flex flex-wrap items-center gap-3" style={enterAt(240)}>
-                <Button size="lg" asChild>
+                <Button size="xl" asChild className="shadow-lg shadow-primary/25 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 motion-reduce:hover:translate-y-0">
                   <Link href={primaryHref}>
-                    {signedIn ? "Go to your dashboard" : "Start your free trial"} <ArrowRight />
+                    {signedIn ? "Go to your dashboard" : "Start your free trial"} <ArrowRight className="transition-transform group-hover/button:translate-x-0.5 motion-reduce:transition-none" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
+                <Button size="xl" variant="outline" asChild className="hover:border-primary/40">
                   <a href={demo.url} target="_blank" rel="noopener noreferrer">
                     View live demo <ExternalLink />
                   </a>
@@ -250,9 +250,9 @@ export default async function Home() {
                   </li>
                 ))}
               </ul>
-              <Button size="lg" asChild className="reveal justify-self-start">
+              <Button size="xl" asChild className="reveal justify-self-start shadow-lg shadow-primary/25 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 motion-reduce:hover:translate-y-0">
                 <Link href={primaryHref}>
-                  {signedIn ? "Open your dashboard" : "Try it free"} <ArrowRight />
+                  {signedIn ? "Open your dashboard" : "Try it free"} <ArrowRight className="transition-transform group-hover/button:translate-x-0.5 motion-reduce:transition-none" />
                 </Link>
               </Button>
             </div>
@@ -340,7 +340,7 @@ export default async function Home() {
                 <p className="text-sm text-muted-foreground">
                   Call or email us — we&apos;re happy to help you set up your store.
                 </p>
-                <Button variant="outline" asChild className="justify-self-start">
+                <Button size="lg" variant="outline" asChild className="justify-self-start px-4">
                   <Link href="/contact">Contact us</Link>
                 </Button>
               </div>
@@ -371,13 +371,13 @@ export default async function Home() {
               </p>
             </div>
             <div className="relative mt-8 flex flex-wrap gap-3 lg:mt-0 lg:justify-end">
-              <Button size="lg" variant="secondary" asChild>
+              <Button size="xl" asChild className="bg-white text-primary shadow-lg shadow-black/10 hover:-translate-y-0.5 hover:bg-white/90 hover:text-primary motion-reduce:hover:translate-y-0">
                 <Link href={primaryHref}>
-                  {signedIn ? "Go to your dashboard" : "Create your store"} <ArrowRight />
+                  {signedIn ? "Go to your dashboard" : "Create your store"} <ArrowRight className="transition-transform group-hover/button:translate-x-0.5 motion-reduce:transition-none" />
                 </Link>
               </Button>
               <Button
-                size="lg"
+                size="xl"
                 variant="ghost"
                 asChild
                 className="border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
