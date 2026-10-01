@@ -20,6 +20,7 @@ import { deleteProductAction } from "@/server/catalog/actions";
 import { listCategoryOptions } from "@/server/catalog/categories";
 import { listRecentAdjustments } from "@/server/catalog/inventory";
 import { getAdminProduct } from "@/server/catalog/products";
+import { getActiveDomain } from "@/server/domains/service";
 import { MAX_IMAGES_PER_PRODUCT } from "@/server/catalog/schemas";
 import { getStoreContext } from "@/server/tenant/context";
 
@@ -35,10 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function EditProductPage({ params, searchParams }: Props) {
   const { storeSlug, productId } = await params;
   const { store, can } = await getStoreContext(storeSlug, "products:write");
-  const [product, categories, adjustments] = await Promise.all([
+  const [product, categories, adjustments, customDomain] = await Promise.all([
     getAdminProduct(store.id, productId),
     listCategoryOptions(store.id),
     listRecentAdjustments(store.id, { productId, take: 8 }),
+    getActiveDomain(store.id),
   ]);
   if (!product) notFound();
   const { created } = await searchParams;
@@ -46,7 +48,7 @@ export default async function EditProductPage({ params, searchParams }: Props) {
   const deleteAction = deleteProductAction.bind(null, store.id, product.id);
   const liveUrl =
     store.status === "ACTIVE" && product.status === "ACTIVE"
-      ? `${storeUrl(store.slug)}/products/${product.slug}`
+      ? `${storeUrl(store.slug, { customDomain })}/products/${product.slug}`
       : null;
 
   return (

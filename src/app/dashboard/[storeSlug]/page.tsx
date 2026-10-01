@@ -21,6 +21,7 @@ import { formatMoney } from "@/lib/money";
 import { storeHostname } from "@/lib/site";
 import { countStockAlerts } from "@/server/catalog/inventory";
 import { countCustomers } from "@/server/customers/service";
+import { getActiveDomain } from "@/server/domains/service";
 import { getOrderStats } from "@/server/orders/service";
 import { STORE_ROLE_LABELS } from "@/server/rbac/permissions";
 import { getSetupProgress } from "@/server/stores/service";
@@ -36,11 +37,12 @@ export async function generateMetadata({
 export default async function StoreOverviewPage({ params }: PageProps<"/dashboard/[storeSlug]">) {
   const { storeSlug } = await params;
   const { store, role, can } = await getStoreContext(storeSlug);
-  const [progress, orders, stock, customers] = await Promise.all([
+  const [progress, orders, stock, customers, customDomain] = await Promise.all([
     getSetupProgress(store.id),
     getOrderStats(store.id),
     countStockAlerts(store.id),
     countCustomers(store.id),
+    getActiveDomain(store.id),
   ]);
   const base = `/dashboard/${store.slug}`;
   const tiles = [
@@ -82,12 +84,12 @@ export default async function StoreOverviewPage({ params }: PageProps<"/dashboar
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{store.name}</h1>
           <p className="text-sm text-muted-foreground">
-            {storeHostname(store.slug)} · You are {STORE_ROLE_LABELS[role].toLowerCase()}
+            {customDomain ?? storeHostname(store.slug)} · You are {STORE_ROLE_LABELS[role].toLowerCase()}
           </p>
         </div>
         {store.status === "ACTIVE" && (
           <Button variant="outline" asChild>
-            <a href={storeUrl(store.slug)} target="_blank" rel="noopener noreferrer">
+            <a href={storeUrl(store.slug, { customDomain })} target="_blank" rel="noopener noreferrer">
               View store <ExternalLink />
             </a>
           </Button>

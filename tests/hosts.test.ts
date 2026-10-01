@@ -34,10 +34,10 @@ describe("storeSlugFromHost", () => {
 
 describe("storeUrl", () => {
   it("uses <slug>.localhost in development", () => {
-    expect(storeUrl("rahim", "http://localhost:3000")).toBe("http://rahim.localhost:3000");
+    expect(storeUrl("rahim", { appUrl: "http://localhost:3000" })).toBe("http://rahim.localhost:3000");
   });
 
   it("uses the root domain in production", () => {
-    expect(storeUrl("rahim", "https://shopcreatorbd.vercel.app")).toMatch(/^https:\/\/rahim\./);
+    expect(storeUrl("rahim", { appUrl: "https://shopcreatorbd.vercel.app" })).toMatch(/^https:\/\/rahim\./);
   });
 });

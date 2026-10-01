@@ -64,6 +64,8 @@ type Props = {
   stores: { name: string; slug: string }[];
   canCreateStore: boolean;
   pendingOrders: number;
+  /** Owner-only sections are hidden from staff who can't open them. */
+  canManageDomain: boolean;
   user: SidebarUser;
 };
 
@@ -73,7 +75,7 @@ const STATUS_LABEL: Record<StoreStatus, string> = {
   SUSPENDED: "Suspended",
 };
 
-export function StoreSidebar({ store, stores, canCreateStore, pendingOrders, user }: Props) {
+export function StoreSidebar({ store, stores, canCreateStore, pendingOrders, canManageDomain, user }: Props) {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
   const base = `/dashboard/${store.slug}`;
@@ -103,7 +105,7 @@ export function StoreSidebar({ store, stores, canCreateStore, pendingOrders, use
         ...(store.status === "ACTIVE"
           ? [{ label: "View store", icon: ExternalLink, external: store.url }]
           : []),
-        { label: "Domain", icon: Globe },
+        ...(canManageDomain ? [{ label: "Domain", icon: Globe, path: "/domain" }] : []),
       ],
     },
     {

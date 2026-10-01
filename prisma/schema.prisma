@@ -55,6 +55,13 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum DomainStatus {
+  /// Added; waiting for DNS (and provider verification).
+  PENDING
+  /// DNS verified and serving the storefront.
+  ACTIVE
+}
+
 enum InventoryReason {
   INITIAL
   RESTOCK
@@ -169,6 +176,7 @@ model Store {
   carts      Cart[]
   customers  Customer[]
   orders     Order[]
+  domain     StoreDomain?
 
   @@map("stores")
 }
@@ -208,6 +216,28 @@ model StoreTheme {
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   @@map("store_themes")
+}
+
+/// A merchant's own domain (e.g. www.rahimfashion.com). One per store for now.
+model StoreDomain {
+  id            String       @id @default(cuid())
+  storeId       String       @unique
+  /// Lowercase, punycode, no port or trailing dot.
+  hostname      String       @unique
+  status        DomainStatus @default(PENDING)
+  /// DNS records the merchant must create, as last computed for display.
+  records       Json?
+  lastCheckedAt DateTime?
+  verifiedAt    DateTime?
+  /// Why the last check failed, in plain language.
+  lastError     String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@map("store_domains")
 }
 
 // ─────────────────────────────────────────────────────────────

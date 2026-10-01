@@ -20,6 +20,7 @@ const SECTION_LABELS: Record<string, string> = {
   categories: "Categories",
   inventory: "Inventory",
   design: "Store design",
+  domain: "Domain",
   settings: "Settings",
   stores: "Stores",
   users: "Users",

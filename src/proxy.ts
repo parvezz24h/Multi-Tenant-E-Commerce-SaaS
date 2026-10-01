@@ -1,27 +1,43 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { storeSlugFromHost } from "@/lib/hosts";
+import { storeSlugForCustomDomain } from "@/lib/custom-domain-lookup";
+import { isPlatformHost, normalizeHost, storeSlugFromHost } from "@/lib/hosts";
 
 /** Internal prefix storefront routes live under (src/app/s/[storeSlug]). */
 const STOREFRONT_PREFIX = "/s";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/onboarding", "/admin"];
 
-export function proxy(request: NextRequest) {
+function rewriteToStore(request: NextRequest, storeSlug: string) {
   const { pathname, search } = request.nextUrl;
-  const storeSlug = storeSlugFromHost(request.headers.get("host"));
+  const url = request.nextUrl.clone();
+  url.pathname = `${STOREFRONT_PREFIX}/${storeSlug}${pathname === "/" ? "" : pathname}`;
+  url.search = search;
+  return NextResponse.rewrite(url);
+}
 
-  // Store hostnames: serve the storefront. Every path is rewritten under the
-  // store, so platform pages (/dashboard, /admin…) are unreachable here.
-  if (storeSlug) {
-    const url = request.nextUrl.clone();
-    url.pathname = `${STOREFRONT_PREFIX}/${storeSlug}${pathname === "/" ? "" : pathname}`;
-    url.search = search;
-    return NextResponse.rewrite(url);
+export async function proxy(request: NextRequest) {
+  const host = request.headers.get("host");
+  const { pathname } = request.nextUrl;
+
+  // 1. Platform subdomains: <slug>.<root domain> (or <slug>.localhost in dev).
+  // Every path is rewritten under the store, so platform pages
+  // (/dashboard, /admin…) are unreachable on store hosts.
+  const subdomainSlug = storeSlugFromHost(host);
+  if (subdomainSlug) return rewriteToStore(request, subdomainSlug);
+
+  // 2. Merchant custom domains: anything that isn't a platform host.
+  if (!isPlatformHost(host)) {
+    const slug = await storeSlugForCustomDomain(normalizeHost(host));
+    if (slug) return rewriteToStore(request, slug);
+    return new NextResponse("This domain isn't connected to a store.", {
+      status: 404,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
   }
 
-  // Platform hostname: storefront routes are only reachable via their host,
+  // 3. Platform host. Storefront routes are only reachable via their host,
   // so relative links and per-store cookies always work.
   if (pathname === STOREFRONT_PREFIX || pathname.startsWith(`${STOREFRONT_PREFIX}/`)) {
     return new NextResponse(null, { status: 404 });

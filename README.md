@@ -39,6 +39,19 @@ open http://<store-slug>.localhost:3000
 > or seeds. `.env.example` uses the local Docker database. Apply migrations to a
 > deployed database with `pnpm db:deploy`.
 
+### Custom domains
+
+Merchants connect their own domain on **Dashboard → Domain**. Set
+`VERCEL_API_TOKEN` and `VERCEL_PROJECT_ID` (and `VERCEL_TEAM_ID` for team
+projects) in production so domains are added to the Vercel project, which
+routes them and issues SSL automatically. Without them the app only checks DNS,
+which is enough for local development. Merchants add a CNAME
+(`cname.vercel-dns.com`) for subdomains like `www`, or an A record
+(`76.76.21.21`) for root domains; Vercel may also ask for a TXT ownership record.
+
+Store subdomains (`<slug>.<root domain>`) need a domain you own with a wildcard
+record; they don't work on `*.vercel.app`.
+
 ### File storage
 
 Product images use `STORAGE_DRIVER=local` by default: files go to `./.uploads`
@@ -85,6 +98,7 @@ src/server/                 Server-only application modules
   storefront/               Public catalog queries (ACTIVE stores/products only)
   cart/                     Guest cart (per-store httpOnly cookie)
   checkout/                 COD order placement, confirmation and tracking lookups
+  domains/                  Custom domain parsing, DNS records, Vercel/DNS providers
   catalog/                  Products, categories, images, inventory (merchant side)
   orders/                   Order list/detail, status transitions, restocking
   customers/                Customer list/detail
@@ -124,3 +138,6 @@ Every store is a tenant; tenant-owned rows carry `storeId`.
    items and cart deletion all succeed or none do. Customers reach their order only
    through an unguessable `publicToken` link, or by entering the order number together
    with the phone number it was placed with.
+10. **Custom domains** are resolved in `src/proxy.ts`: any host that isn't a platform
+    host is looked up in `store_domains` (ACTIVE only, cached ~60s) and rewritten to
+    that store, exactly like a subdomain. Unknown domains get a 404.
