@@ -355,40 +355,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ── Final call to action ─────────────────────────── */}
-        <section className="px-4 pb-24 sm:px-6 lg:px-8">
-          <div className="reveal relative mx-auto grid w-full max-w-7xl overflow-hidden rounded-3xl bg-primary px-6 py-16 text-primary-foreground sm:px-12 lg:grid-cols-[1.5fr_1fr] lg:items-center lg:gap-10">
-            <div aria-hidden className="pointer-events-none absolute inset-0">
-              <div className="absolute -top-24 -right-24 size-80 rounded-full bg-white/10" />
-              <div className="absolute -bottom-32 right-1/4 size-72 rounded-full bg-white/5" />
-            </div>
-            <div className="relative grid gap-4">
-              <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-                Your customers are already online. Is your store?
-              </h2>
-              <p className="max-w-xl text-primary-foreground/80">
-                Start free today. Set up your store in minutes and take your first Cash on Delivery order this week.
-              </p>
-            </div>
-            <div className="relative mt-8 flex flex-wrap gap-3 lg:mt-0 lg:justify-end">
-              <Button size="xl" asChild className="bg-white text-primary shadow-lg shadow-black/10 hover:-translate-y-0.5 hover:bg-white/90 hover:text-primary motion-reduce:hover:translate-y-0">
-                <Link href={primaryHref}>
-                  {signedIn ? "Go to your dashboard" : "Create your store"} <ArrowRight className="transition-transform group-hover/button:translate-x-0.5 motion-reduce:transition-none" />
-                </Link>
-              </Button>
-              <Button
-                size="xl"
-                variant="ghost"
-                asChild
-                className="border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-              >
-                <a href={demo.url} target="_blank" rel="noopener noreferrer">
-                  View live demo
-                </a>
-              </Button>
-            </div>
-          </div>
-        </section>
       </main>
 
       <SiteFooter />

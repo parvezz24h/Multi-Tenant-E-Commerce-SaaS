@@ -18,10 +18,10 @@ export function BrandMark({ className, priority }: { className?: string; priorit
 }
 
 /** "ShopCreator" + orange "BD", matching the logo's wordmark but as live text. */
-export function BrandName({ className }: { className?: string }) {
+export function BrandName({ className, accentClassName }: { className?: string; accentClassName?: string }) {
   return (
     <span className={cn("font-semibold tracking-tight", className)}>
-      ShopCreator<span className="text-primary">BD</span>
+      ShopCreator<span className={cn("text-primary", accentClassName)}>BD</span>
     </span>
   );
 }
