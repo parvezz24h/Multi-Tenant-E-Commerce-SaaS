@@ -116,7 +116,7 @@ export default async function Home() {
             aria-hidden
             className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--color-muted),transparent_60%)]"
           />
-          <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 pt-16 pb-24 lg:grid-cols-[1fr_1.1fr] lg:pt-24">
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:grid-cols-[1fr_1.1fr] lg:pt-24">
             <div className="grid justify-items-start gap-6">
               <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
                 <span className="size-1.5 rounded-full bg-emerald-500" />
@@ -154,7 +154,7 @@ export default async function Home() {
 
         {/* Features */}
         <section aria-labelledby="features-heading" className="scroll-mt-20 border-t bg-muted/30 py-24" id="features">
-          <div className="mx-auto grid w-full max-w-6xl gap-14 px-4">
+          <div className="mx-auto grid w-full max-w-7xl gap-14 px-4 sm:px-6 lg:px-8">
             <SectionHeading
               id="features-heading"
               eyebrow="Features"
@@ -181,7 +181,7 @@ export default async function Home() {
 
         {/* How it works */}
         <section aria-labelledby="how-heading" className="scroll-mt-20 py-24" id="how-it-works">
-          <div className="mx-auto grid w-full max-w-6xl gap-14 px-4">
+          <div className="mx-auto grid w-full max-w-7xl gap-14 px-4 sm:px-6 lg:px-8">
             <SectionHeading id="how-heading" eyebrow="How it works" title="Your store is live in three steps" />
             <ol className="grid gap-6 md:grid-cols-3">
               {STEPS.map((step, i) => (
@@ -200,7 +200,7 @@ export default async function Home() {
         {/* Pricing */}
         {plans.length > 0 && (
           <section aria-labelledby="pricing-heading" className="scroll-mt-20 border-t bg-muted/30 py-24" id="pricing">
-            <div className="mx-auto grid w-full max-w-6xl gap-14 px-4">
+            <div className="mx-auto grid w-full max-w-7xl gap-14 px-4 sm:px-6 lg:px-8">
               <SectionHeading
                 id="pricing-heading"
                 eyebrow="Pricing"
@@ -236,8 +236,8 @@ export default async function Home() {
         </section>
 
         {/* Final call to action */}
-        <section className="px-4 pb-24">
-          <div className="mx-auto grid w-full max-w-6xl justify-items-center gap-6 rounded-3xl bg-foreground px-6 py-16 text-center text-background">
+        <section className="px-4 pb-24 sm:px-6 lg:px-8">
+          <div className="mx-auto grid w-full max-w-7xl justify-items-center gap-6 rounded-3xl bg-foreground px-6 py-16 text-center text-background">
             <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
               Your customers are already online. Is your store?
             </h2>

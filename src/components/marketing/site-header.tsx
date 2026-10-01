@@ -27,7 +27,7 @@ export function Logo() {
 export function SiteHeader({ signedIn }: { signedIn: boolean }) {
   return (
     <header className="sticky top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-6 px-4">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Logo />
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
           {NAV.map((item) => (
