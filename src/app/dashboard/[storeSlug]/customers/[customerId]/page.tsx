@@ -30,9 +30,6 @@ export default async function CustomerPage({ params }: Props) {
 
   return (
     <div className="grid gap-6">
-      <Link href={`${base}/customers`} className="text-sm text-muted-foreground hover:text-foreground">
-        ← Customers
-      </Link>
       <PageHeader
         title={customer.name}
         description={`Customer since ${formatDate(customer.createdAt)} · ${customer.orders.length} orders · ${formatMoney(customer.totalSpent)} spent`}

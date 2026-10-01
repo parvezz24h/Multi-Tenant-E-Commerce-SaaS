@@ -1,4 +1,13 @@
-import { CheckCircle2, Circle, ExternalLink } from "lucide-react";
+import {
+  AlertTriangle,
+  Banknote,
+  CheckCircle2,
+  Circle,
+  ClipboardList,
+  ExternalLink,
+  ShoppingCart,
+  Users,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -35,15 +44,21 @@ export default async function StoreOverviewPage({ params }: PageProps<"/dashboar
   ]);
   const base = `/dashboard/${store.slug}`;
   const tiles = [
-    { label: "Orders today", value: String(orders.todayOrders), href: `${base}/orders` },
-    { label: "Sales today", value: formatMoney(orders.todayRevenue), href: `${base}/orders` },
-    { label: "Orders to handle", value: String(orders.openOrders), href: `${base}/orders?status=PENDING` },
+    { label: "Orders today", value: String(orders.todayOrders), href: `${base}/orders`, icon: ShoppingCart },
+    { label: "Sales today", value: formatMoney(orders.todayRevenue), href: `${base}/orders`, icon: Banknote },
+    {
+      label: "Orders to handle",
+      value: String(orders.openOrders),
+      href: `${base}/orders?status=PENDING`,
+      icon: ClipboardList,
+    },
     {
       label: "Low / out of stock",
       value: `${stock.low} / ${stock.out}`,
       href: `${base}/inventory?filter=${stock.out > 0 ? "out" : "low"}`,
+      icon: AlertTriangle,
     },
-    { label: "Customers", value: String(customers), href: `${base}/customers` },
+    { label: "Customers", value: String(customers), href: `${base}/customers`, icon: Users },
   ];
 
   const checklist = [
@@ -82,8 +97,14 @@ export default async function StoreOverviewPage({ params }: PageProps<"/dashboar
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {tiles.map((t) => (
           <li key={t.label}>
-            <Link href={t.href} className="grid h-full gap-1 rounded-xl border p-4 hover:bg-muted/40">
-              <span className="text-xs text-muted-foreground">{t.label}</span>
+            <Link
+              href={t.href}
+              className="grid h-full gap-1 rounded-xl border p-4 transition-colors hover:bg-muted/40"
+            >
+              <span className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                {t.label}
+                <t.icon className="size-4" aria-hidden />
+              </span>
               <span className="text-xl font-semibold tabular-nums">{t.value}</span>
             </Link>
           </li>

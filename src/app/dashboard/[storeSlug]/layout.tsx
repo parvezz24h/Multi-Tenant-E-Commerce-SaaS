@@ -1,8 +1,15 @@
-import { AppHeader } from "@/components/dashboard/app-header";
-import { StoreNav } from "@/components/dashboard/store-nav";
+import { Breadcrumbs } from "@/components/dashboard/breadcrumbs";
+import { SidebarShell } from "@/components/dashboard/sidebar-shell";
+import { StoreSidebar } from "@/components/dashboard/store-sidebar";
 import { StoreStatusBadge } from "@/components/stores/store-status-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { storeUrl } from "@/lib/hosts";
 import { countPendingOrders } from "@/server/orders/service";
+import {
+  countOwnedStores,
+  listStoresForUser,
+  MAX_OWNED_STORES_PER_USER,
+} from "@/server/stores/service";
 import { getStoreContext } from "@/server/tenant/context";
 
 export default async function StoreDashboardLayout({
@@ -10,34 +17,40 @@ export default async function StoreDashboardLayout({
   params,
 }: LayoutProps<"/dashboard/[storeSlug]">) {
   const { storeSlug } = await params;
-  const { store, can } = await getStoreContext(storeSlug);
-  const pendingOrders = can("orders:read") ? await countPendingOrders(store.id) : 0;
+  const { store, user, can } = await getStoreContext(storeSlug);
+  const [pendingOrders, memberships, owned] = await Promise.all([
+    can("orders:read") ? countPendingOrders(store.id) : 0,
+    listStoresForUser(user.id),
+    countOwnedStores(user.id),
+  ]);
 
   return (
-    <>
-      <AppHeader>
-        <span className="text-muted-foreground" aria-hidden>
-          /
-        </span>
-        <span className="truncate font-medium">{store.name}</span>
-        <StoreStatusBadge status={store.status} />
-      </AppHeader>
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 md:flex-row">
-        <aside className="md:w-56 md:shrink-0">
-          <StoreNav storeSlug={store.slug} pendingOrders={pendingOrders} />
-        </aside>
-        <main className="min-w-0 flex-1">
-          {store.status === "SUSPENDED" && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertTitle>This store is suspended</AlertTitle>
-              <AlertDescription>
-                Your storefront is offline. Please contact support to restore it.
-              </AlertDescription>
-            </Alert>
-          )}
-          {children}
-        </main>
-      </div>
-    </>
+    <SidebarShell
+      sidebar={
+        <StoreSidebar
+          store={{ name: store.name, slug: store.slug, status: store.status, url: storeUrl(store.slug) }}
+          stores={memberships.map((m) => ({ name: m.store.name, slug: m.store.slug }))}
+          canCreateStore={owned < MAX_OWNED_STORES_PER_USER}
+          pendingOrders={pendingOrders}
+          user={{
+            name: user.name,
+            email: user.email,
+            isSuperAdmin: user.platformRole === "SUPER_ADMIN",
+          }}
+        />
+      }
+      topbar={<Breadcrumbs base={`/dashboard/${store.slug}`} rootLabel={store.name} />}
+      topbarEnd={<StoreStatusBadge status={store.status} />}
+    >
+      {store.status === "SUSPENDED" && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertTitle>This store is suspended</AlertTitle>
+          <AlertDescription>
+            Your storefront is offline. Please contact support to restore it.
+          </AlertDescription>
+        </Alert>
+      )}
+      {children}
+    </SidebarShell>
   );
 }

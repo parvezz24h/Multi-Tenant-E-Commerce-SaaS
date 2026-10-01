@@ -38,9 +38,6 @@ export default async function OrderPage({ params }: Props) {
 
   return (
     <div className="grid gap-6">
-      <Link href={`${base}/orders`} className="text-sm text-muted-foreground hover:text-foreground">
-        ← Orders
-      </Link>
       <PageHeader
         title={
           <span className="flex flex-wrap items-center gap-2">

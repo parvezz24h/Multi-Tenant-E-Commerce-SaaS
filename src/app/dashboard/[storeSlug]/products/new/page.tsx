@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { ProductForm } from "@/components/catalog/product-form";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -18,12 +17,6 @@ export default async function NewProductPage({
 
   return (
     <div className="grid gap-6">
-      <Link
-        href={`/dashboard/${store.slug}/products`}
-        className="text-sm text-muted-foreground hover:text-foreground"
-      >
-        ← Products
-      </Link>
       <PageHeader title="Add product" description="You can add images after saving." />
       <ProductForm
         storeId={store.id}

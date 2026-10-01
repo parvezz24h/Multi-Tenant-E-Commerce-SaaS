@@ -16,7 +16,7 @@ type Props = {
  */
 export function ProductImage({ url, alt, className, sizes, priority }: Props) {
   return (
-    <div className={cn("relative aspect-square overflow-hidden rounded-lg bg-muted", className)}>
+    <div className={cn("@container relative aspect-square overflow-hidden rounded-lg bg-muted", className)}>
       {url ? (
         <Image
           src={url}
@@ -30,7 +30,7 @@ export function ProductImage({ url, alt, className, sizes, priority }: Props) {
       ) : (
         <div
           aria-hidden
-          className="flex size-full items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 text-4xl font-semibold text-primary/60"
+          className="flex size-full items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 text-[40cqw] font-semibold text-primary/60"
         >
           {alt.trim().charAt(0).toUpperCase() || "?"}
         </div>

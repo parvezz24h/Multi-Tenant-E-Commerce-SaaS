@@ -128,3 +128,13 @@
     @apply font-sans;
   }
 }
+/* Shimmer sweep for loading skeletons (see components/ui/skeleton.tsx). */
+@theme {
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}

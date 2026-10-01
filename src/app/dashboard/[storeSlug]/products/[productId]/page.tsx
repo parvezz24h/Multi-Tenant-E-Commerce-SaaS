@@ -1,6 +1,5 @@
 import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ImageManager } from "@/components/catalog/image-manager";
@@ -52,12 +51,6 @@ export default async function EditProductPage({ params, searchParams }: Props) {
 
   return (
     <div className="grid gap-6">
-      <Link
-        href={`/dashboard/${store.slug}/products`}
-        className="text-sm text-muted-foreground hover:text-foreground"
-      >
-        ← Products
-      </Link>
       <PageHeader
         title={
           <span className="flex flex-wrap items-center gap-2">
