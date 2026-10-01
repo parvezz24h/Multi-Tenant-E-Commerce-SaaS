@@ -39,6 +39,15 @@ export async function listStores() {
       slug: true,
       status: true,
       createdAt: true,
+      subscription: {
+        select: {
+          status: true,
+          trialEndsAt: true,
+          currentPeriodEnd: true,
+          cancelAtPeriodEnd: true,
+          plan: { select: { name: true } },
+        },
+      },
       members: {
         where: { role: "STORE_OWNER" },
         take: 1,

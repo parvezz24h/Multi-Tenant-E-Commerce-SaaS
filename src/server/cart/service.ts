@@ -7,6 +7,7 @@ import { cache } from "react";
 
 import { db } from "@/lib/db";
 import { AppError } from "@/server/errors";
+import { isStoreOpen } from "@/server/storefront/service";
 
 /** Per-line cap so a single cart can't reserve a store's whole inventory. */
 export const MAX_QUANTITY_PER_ITEM = 20;
@@ -119,8 +120,8 @@ export async function getCartId(storeId: string) {
 }
 
 async function requireOpenStore(storeId: string) {
-  const store = await db.store.findUnique({ where: { id: storeId }, select: { status: true } });
-  if (store?.status !== "ACTIVE") throw new AppError("NOT_FOUND", "This store is not available.");
+  const store = await db.store.findUnique({ where: { id: storeId }, select: { id: true, status: true } });
+  if (!store || !(await isStoreOpen(store))) throw new AppError("NOT_FOUND", "This store is not available.");
 }
 
 async function requireBuyableProduct(storeId: string, productId: string) {

@@ -3,6 +3,7 @@ import "server-only";
 import { Prisma, type ProductStatus } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { recordAudit } from "@/server/audit/log";
+import { assertCanAddProduct } from "@/server/billing/service";
 import { AppError } from "@/server/errors";
 import { storage } from "@/server/storage";
 import type { StoreContext } from "@/server/tenant/context";
@@ -76,6 +77,7 @@ export async function getAdminProduct(storeId: string, productId: string) {
 
 export async function createProduct(ctx: StoreContext, input: CreateProductInput) {
   await assertCategoryInStore(ctx.store.id, input.categoryId);
+  if (input.status !== "ARCHIVED") await assertCanAddProduct(ctx.store.id);
   const { stock, ...fields } = input;
 
   try {
@@ -117,6 +119,15 @@ export async function updateProduct(
   input: UpdateProductInput,
 ) {
   await assertCategoryInStore(ctx.store.id, input.categoryId);
+
+  // Un-archiving counts against the plan's product limit.
+  if (input.status !== "ARCHIVED") {
+    const current = await db.product.findFirst({
+      where: { id: productId, storeId: ctx.store.id },
+      select: { status: true },
+    });
+    if (current?.status === "ARCHIVED") await assertCanAddProduct(ctx.store.id, productId);
+  }
 
   try {
     return await db.$transaction(async (tx) => {

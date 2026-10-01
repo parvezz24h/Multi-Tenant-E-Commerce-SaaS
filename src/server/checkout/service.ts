@@ -12,6 +12,7 @@ import { recordAudit } from "@/server/audit/log";
 import { getCartId } from "@/server/cart/service";
 import { adjustStock } from "@/server/catalog/inventory";
 import { AppError } from "@/server/errors";
+import { isStoreOpen } from "@/server/storefront/service";
 
 import type { CheckoutInput } from "./schemas";
 
@@ -30,7 +31,9 @@ export async function placeOrder(storeId: string, input: CheckoutInput) {
     where: { id: storeId },
     select: { id: true, status: true, deliveryChargeInsideDhaka: true, deliveryChargeOutsideDhaka: true },
   });
-  if (store?.status !== "ACTIVE") throw new AppError("NOT_FOUND", "This store is not taking orders right now.");
+  if (!store || !(await isStoreOpen(store))) {
+    throw new AppError("NOT_FOUND", "This store is not taking orders right now.");
+  }
 
   const cartId = await getCartId(storeId);
   if (!cartId) throw new AppError("INVALID", "Your cart is empty.");

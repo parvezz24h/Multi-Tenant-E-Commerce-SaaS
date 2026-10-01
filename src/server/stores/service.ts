@@ -3,6 +3,7 @@ import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { recordAudit } from "@/server/audit/log";
+import { startTrial } from "@/server/billing/service";
 import { AppError } from "@/server/errors";
 import type { StoreContext } from "@/server/tenant/context";
 import { THEMES } from "@/themes/registry";
@@ -47,6 +48,7 @@ export async function createStore(userId: string, input: CreateStoreInput) {
           members: { create: { userId, role: "STORE_OWNER" } },
         },
       });
+      await startTrial(tx, store.id);
       await recordAudit(
         {
           storeId: store.id,

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 
 import { getCart } from "@/server/cart/service";
-import { getStorefrontStore, listCategories } from "@/server/storefront/service";
+import { getStorefrontStore, isStoreOpen, listCategories } from "@/server/storefront/service";
 import { getTheme, resolveTheme } from "@/themes/registry";
 
 export async function generateMetadata({
@@ -14,7 +14,7 @@ export async function generateMetadata({
   return {
     title: { default: store.name, template: `%s · ${store.name}` },
     description: store.description ?? undefined,
-    robots: store.status === "ACTIVE" ? undefined : { index: false, follow: false },
+    robots: (await isStoreOpen(store)) ? undefined : { index: false, follow: false },
   };
 }
 
@@ -26,9 +26,9 @@ export default async function StorefrontLayout({
   const store = await getStorefrontStore(storeSlug);
   if (!store) notFound();
 
-  // Draft and suspended stores are not public. Show the same neutral page
-  // for both so a suspension isn't advertised to shoppers.
-  if (store.status !== "ACTIVE") {
+  // Draft, suspended and unpaid stores are not public. Show the same neutral
+  // page for all of them so the reason isn't advertised to shoppers.
+  if (!(await isStoreOpen(store))) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-24 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">{store.name}</h1>

@@ -4,6 +4,7 @@ import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
+import { isSubscriptionInGoodStanding } from "@/server/billing/service";
 
 import { PRODUCT_SORTS, type ProductQuery } from "./params";
 
@@ -39,10 +40,18 @@ export const getStorefrontStore = cache(async (slug: string) => {
   return db.store.findUnique({ where: { slug }, select: storeSelect });
 });
 
+/**
+ * Open to the public: published, not suspended by the platform, and the
+ * subscription is paid up (or in its trial / grace period).
+ */
+export async function isStoreOpen(store: { id: string; status: string }) {
+  return store.status === "ACTIVE" && (await isSubscriptionInGoodStanding(store.id));
+}
+
 /** The store only if it is open to the public. */
 export const getOpenStore = cache(async (slug: string) => {
   const store = await getStorefrontStore(slug);
-  return store?.status === "ACTIVE" ? store : null;
+  return store && (await isStoreOpen(store)) ? store : null;
 });
 
 const activeProduct = (storeId: string) =>

@@ -21,6 +21,8 @@ const SECTION_LABELS: Record<string, string> = {
   inventory: "Inventory",
   design: "Store design",
   domain: "Domain",
+  billing: "Subscription",
+  plans: "Plans",
   settings: "Settings",
   stores: "Stores",
   users: "Users",
@@ -39,7 +41,16 @@ function detailLabel(section: string, segment: string) {
  * Path-based breadcrumbs for an area such as `/dashboard/<slug>` or `/admin`.
  * The last crumb is the current page.
  */
-export function Breadcrumbs({ base, rootLabel }: { base: string; rootLabel: string }) {
+export function Breadcrumbs({
+  base,
+  rootLabel,
+  labels,
+}: {
+  base: string;
+  rootLabel: string;
+  /** Per-area overrides, e.g. "billing" is "Billing" in admin but "Subscription" for merchants. */
+  labels?: Record<string, string>;
+}) {
   const pathname = usePathname();
   const segments = pathname.startsWith(base)
     ? pathname.slice(base.length).split("/").filter(Boolean)
@@ -47,7 +58,10 @@ export function Breadcrumbs({ base, rootLabel }: { base: string; rootLabel: stri
 
   const crumbs = [{ label: rootLabel, href: base }];
   if (segments[0]) {
-    crumbs.push({ label: SECTION_LABELS[segments[0]] ?? segments[0], href: `${base}/${segments[0]}` });
+    crumbs.push({
+      label: labels?.[segments[0]] ?? SECTION_LABELS[segments[0]] ?? segments[0],
+      href: `${base}/${segments[0]}`,
+    });
   }
   if (segments[0] && segments[1]) {
     crumbs.push({

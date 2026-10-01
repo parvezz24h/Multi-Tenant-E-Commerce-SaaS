@@ -66,6 +66,7 @@ type Props = {
   pendingOrders: number;
   /** Owner-only sections are hidden from staff who can't open them. */
   canManageDomain: boolean;
+  canManageBilling: boolean;
   user: SidebarUser;
 };
 
@@ -75,7 +76,15 @@ const STATUS_LABEL: Record<StoreStatus, string> = {
   SUSPENDED: "Suspended",
 };
 
-export function StoreSidebar({ store, stores, canCreateStore, pendingOrders, canManageDomain, user }: Props) {
+export function StoreSidebar({
+  store,
+  stores,
+  canCreateStore,
+  pendingOrders,
+  canManageDomain,
+  canManageBilling,
+  user,
+}: Props) {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
   const base = `/dashboard/${store.slug}`;
@@ -113,7 +122,7 @@ export function StoreSidebar({ store, stores, canCreateStore, pendingOrders, can
       items: [
         { label: "Settings", icon: Settings, path: "/settings" },
         { label: "Payments", icon: Wallet },
-        { label: "Subscription", icon: CreditCard },
+        ...(canManageBilling ? [{ label: "Subscription", icon: CreditCard, path: "/billing" }] : []),
       ],
     },
   ];

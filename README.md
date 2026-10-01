@@ -3,9 +3,9 @@
 Multi-tenant SaaS for single-vendor e-commerce stores, built for Bangladesh.
 See [Project Plan.md](./Project%20Plan.md) for the full roadmap.
 
-**Status:** Phase 4 — Checkout (COD orders with Bangladesh addresses, delivery charge by
-district, order confirmation and tracking). Done before it: Phase 1 (auth, stores, RBAC, tenant
-context), Phase 2 (storefront, theme, cart) and Phase 3 (merchant management).
+**Status:** Phases 1–5 and 7 are built: foundation, storefront, merchant management,
+COD checkout, SaaS subscriptions (manual bKash/Nagad/bank payments verified by an admin)
+and custom domains. Next: Bangladesh payment gateways and couriers (Phase 8).
 
 ## Stack
 
@@ -38,6 +38,17 @@ open http://<store-slug>.localhost:3000
 > Check which database `DATABASE_URL` in `.env` points to before running migrations
 > or seeds. `.env.example` uses the local Docker database. Apply migrations to a
 > deployed database with `pnpm db:deploy`.
+
+### Subscriptions
+
+New stores get a 14-day trial (on Business). Merchants pick a plan on
+**Dashboard → Subscription**, pay by bKash/Nagad/bank and submit the transaction ID;
+a platform admin verifies it on **/admin/billing**, which activates the plan for the
+paid months. Unpaid subscriptions go *past due* for 7 days, then *suspended*
+(storefront offline, no new products). Status is derived from dates on every read;
+run `pnpm billing:sync` on a schedule to keep stored statuses current. Set
+`PLATFORM_BKASH_NUMBER` / `PLATFORM_NAGAD_NUMBER` / `PLATFORM_BANK_DETAILS` so the
+billing page shows where to pay. Plan prices and limits are edited on **/admin/plans**.
 
 ### Custom domains
 
@@ -74,6 +85,7 @@ is checked from the file's bytes, not its name.
 | `pnpm db:studio`   | Prisma Studio                               |
 | `pnpm make-admin`  | Promote a user to `SUPER_ADMIN`             |
 | `pnpm seed:demo`   | Add a demo catalog and orders to a store    |
+| `pnpm billing:sync`| Refresh subscription statuses (cron)        |
 
 ## Project structure
 
@@ -99,6 +111,7 @@ src/server/                 Server-only application modules
   cart/                     Guest cart (per-store httpOnly cookie)
   checkout/                 COD order placement, confirmation and tracking lookups
   domains/                  Custom domain parsing, DNS records, Vercel/DNS providers
+  billing/                  Plans, subscriptions, invoices, limits, admin review
   catalog/                  Products, categories, images, inventory (merchant side)
   orders/                   Order list/detail, status transitions, restocking
   customers/                Customer list/detail

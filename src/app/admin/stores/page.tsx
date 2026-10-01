@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
-import { PageHeader } from "@/components/dashboard/page-header";
 import { SuspendStoreButton } from "@/components/admin/suspend-store-button";
+import { SubscriptionBadge } from "@/components/billing/subscription-badge";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { StoreStatusBadge } from "@/components/stores/store-status-badge";
 import {
   Table,
@@ -12,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { storeHostname } from "@/lib/site";
+import { effectiveStatus } from "@/lib/subscription";
 import { requireSuperAdmin } from "@/server/auth/session";
 import { listStores } from "@/server/admin/service";
 
@@ -33,6 +35,7 @@ export default async function AdminStoresPage() {
               <TableHead>Store</TableHead>
               <TableHead>Owner</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Plan</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="text-right">
                 <span className="sr-only">Actions</span>
@@ -42,7 +45,7 @@ export default async function AdminStoresPage() {
           <TableBody>
             {stores.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
                   No stores yet.
                 </TableCell>
               </TableRow>
@@ -67,6 +70,16 @@ export default async function AdminStoresPage() {
                   </TableCell>
                   <TableCell>
                     <StoreStatusBadge status={store.status} />
+                  </TableCell>
+                  <TableCell>
+                    {store.subscription ? (
+                      <div className="grid justify-items-start gap-1">
+                        <span className="text-sm">{store.subscription.plan.name}</span>
+                        <SubscriptionBadge status={effectiveStatus(store.subscription)} />
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>{dateFormat.format(store.createdAt)}</TableCell>
                   <TableCell className="text-right">

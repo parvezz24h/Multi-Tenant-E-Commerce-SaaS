@@ -3,6 +3,7 @@ import "server-only";
 import { Prisma, type StoreDomain } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { recordAudit } from "@/server/audit/log";
+import { assertPlanAllowsCustomDomain } from "@/server/billing/service";
 import { AppError } from "@/server/errors";
 import type { StoreContext } from "@/server/tenant/context";
 
@@ -46,6 +47,7 @@ export async function addDomain(ctx: StoreContext, input: string) {
   const parsed = parseCustomDomain(input);
   if (!parsed.ok) throw new AppError("INVALID", parsed.error, "hostname");
   const domain = parsed.domain;
+  await assertPlanAllowsCustomDomain(ctx.store.id);
 
   if (await db.storeDomain.count({ where: { storeId: ctx.store.id } })) {
     throw new AppError("CONFLICT", "Remove your current domain before adding another.", "hostname");

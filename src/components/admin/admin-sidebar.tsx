@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, LayoutDashboard, Shield, Store, Users } from "lucide-react";
+import { ArrowLeft, Layers, LayoutDashboard, ReceiptText, Shield, Store, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -14,6 +14,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -25,9 +26,11 @@ const ITEMS = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Stores", href: "/admin/stores", icon: Store },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Billing", href: "/admin/billing", icon: ReceiptText },
+  { label: "Plans", href: "/admin/plans", icon: Layers },
 ];
 
-export function AdminSidebar({ user }: { user: SidebarUser }) {
+export function AdminSidebar({ user, invoicesToReview }: { user: SidebarUser; invoicesToReview: number }) {
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
 
@@ -65,6 +68,12 @@ export function AdminSidebar({ user }: { user: SidebarUser }) {
                         <span>{label}</span>
                       </Link>
                     </SidebarMenuButton>
+                    {href === "/admin/billing" && invoicesToReview > 0 && (
+                      <SidebarMenuBadge className="rounded-full bg-primary text-primary-foreground">
+                        {invoicesToReview}
+                        <span className="sr-only"> to verify</span>
+                      </SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 );
               })}

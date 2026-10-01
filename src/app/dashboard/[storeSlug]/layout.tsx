@@ -1,9 +1,11 @@
 import { Breadcrumbs } from "@/components/dashboard/breadcrumbs";
 import { SidebarShell } from "@/components/dashboard/sidebar-shell";
 import { StoreSidebar } from "@/components/dashboard/store-sidebar";
+import { SubscriptionBanner } from "@/components/billing/subscription-banner";
 import { StoreStatusBadge } from "@/components/stores/store-status-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { storeUrl } from "@/lib/hosts";
+import { getSubscription } from "@/server/billing/service";
 import { getActiveDomain } from "@/server/domains/service";
 import { countPendingOrders } from "@/server/orders/service";
 import {
@@ -19,11 +21,12 @@ export default async function StoreDashboardLayout({
 }: LayoutProps<"/dashboard/[storeSlug]">) {
   const { storeSlug } = await params;
   const { store, user, can } = await getStoreContext(storeSlug);
-  const [pendingOrders, memberships, owned, customDomain] = await Promise.all([
+  const [pendingOrders, memberships, owned, customDomain, subscription] = await Promise.all([
     can("orders:read") ? countPendingOrders(store.id) : 0,
     listStoresForUser(user.id),
     countOwnedStores(user.id),
     getActiveDomain(store.id),
+    getSubscription(store.id),
   ]);
 
   return (
@@ -35,6 +38,7 @@ export default async function StoreDashboardLayout({
           canCreateStore={owned < MAX_OWNED_STORES_PER_USER}
           pendingOrders={pendingOrders}
           canManageDomain={can("domains:manage")}
+          canManageBilling={can("billing:manage")}
           user={{
             name: user.name,
             email: user.email,
@@ -52,6 +56,12 @@ export default async function StoreDashboardLayout({
             Your storefront is offline. Please contact support to restore it.
           </AlertDescription>
         </Alert>
+      )}
+      {subscription && (
+        <SubscriptionBanner
+          subscription={subscription}
+          billingHref={can("billing:manage") ? `/dashboard/${store.slug}/billing` : null}
+        />
       )}
       {children}
     </SidebarShell>

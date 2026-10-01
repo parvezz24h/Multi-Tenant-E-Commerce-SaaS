@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock, ExternalLink, Lock } from "lucide-react";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -6,6 +7,7 @@ import { AddDomainForm } from "@/components/domains/add-domain-form";
 import { CopyButton, DomainActions } from "@/components/domains/domain-controls";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -18,6 +20,7 @@ import {
 import { formatDateTime } from "@/lib/datetime";
 import { storeUrl } from "@/lib/hosts";
 import { storeHostname } from "@/lib/site";
+import { getSubscription } from "@/server/billing/service";
 import { domainProviderName, getStoreDomain } from "@/server/domains/service";
 import { getStoreContext } from "@/server/tenant/context";
 
@@ -26,7 +29,8 @@ export const metadata: Metadata = { title: "Domain" };
 export default async function DomainPage({ params }: PageProps<"/dashboard/[storeSlug]/domain">) {
   const { storeSlug } = await params;
   const { store } = await getStoreContext(storeSlug, "domains:manage");
-  const domain = await getStoreDomain(store.id);
+  const [domain, subscription] = await Promise.all([getStoreDomain(store.id), getSubscription(store.id)]);
+  const planAllows = !subscription || subscription.plan.customDomain;
   const active = domain?.status === "ACTIVE";
 
   return (
@@ -62,7 +66,19 @@ export default async function DomainPage({ params }: PageProps<"/dashboard/[stor
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AddDomainForm storeId={store.id} />
+            {planAllows ? (
+              <AddDomainForm storeId={store.id} />
+            ) : (
+              <div className="grid justify-items-start gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Custom domains are included in the Business and Premium plans. You&apos;re on{" "}
+                  {subscription?.plan.name}.
+                </p>
+                <Button asChild>
+                  <Link href={`/dashboard/${store.slug}/billing`}>Upgrade your plan</Link>
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (

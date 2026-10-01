@@ -16,6 +16,7 @@
     "db:studio": "prisma studio",
     "make-admin": "tsx scripts/make-super-admin.ts",
     "seed:demo": "tsx scripts/seed-demo-catalog.ts",
+    "billing:sync": "tsx scripts/sync-subscriptions.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
