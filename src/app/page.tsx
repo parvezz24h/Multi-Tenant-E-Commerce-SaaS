@@ -116,7 +116,8 @@ export default async function Home() {
             aria-hidden
             className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--color-muted),transparent_60%)]"
           />
-          <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:grid-cols-[1fr_1.1fr] lg:pt-24">
+          {/* At least one screen tall (minus the 4rem header); svh avoids jumps when mobile browser bars move. */}
+          <div className="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:px-8 lg:py-20">
             <div className="grid justify-items-start gap-6">
               <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
                 <span className="size-1.5 rounded-full bg-primary" />
