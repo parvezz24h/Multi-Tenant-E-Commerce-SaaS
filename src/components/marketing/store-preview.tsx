@@ -78,7 +78,7 @@ export function StorePreview() {
         </div>
 
         {/* Floating order notification */}
-        <div className="absolute -bottom-6 -left-4 hidden w-64 rounded-xl border bg-background p-4 shadow-xl shadow-foreground/10 sm:block lg:-left-10">
+        <div className="float absolute -bottom-6 -left-4 hidden w-64 rounded-xl border bg-background p-4 shadow-xl shadow-foreground/10 sm:block lg:-left-10">
           <div className="flex items-start gap-3">
             <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
             <div className="grid gap-0.5">
