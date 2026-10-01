@@ -37,9 +37,10 @@ export function Pricing({ plans, signedIn }: { plans: Plan[]; signedIn: boolean 
   const cta = signedIn ? "/dashboard" : "/sign-up";
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className={cn("grid gap-6", plans.length === 1 ? "mx-auto w-full max-w-md" : "lg:grid-cols-3")}>
       {plans.map((plan) => {
-        const featured = plan.key === FEATURED_PLAN;
+        // A "most popular" badge only makes sense when there's a choice.
+        const featured = plans.length > 1 && plan.key === FEATURED_PLAN;
         return (
           <div
             key={plan.key}

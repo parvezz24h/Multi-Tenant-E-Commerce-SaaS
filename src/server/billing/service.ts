@@ -16,8 +16,6 @@ import type { StoreContext } from "@/server/tenant/context";
 
 import type { PaymentSubmission } from "./schemas";
 
-/** New stores try this plan so they can evaluate every feature. */
-export const TRIAL_PLAN_KEY = "business";
 
 const subscriptionInclude = { plan: true } satisfies Prisma.SubscriptionInclude;
 
@@ -28,10 +26,17 @@ export async function listPlans({ activeOnly = true } = {}) {
   });
 }
 
-/** Start the free trial for a new store (call inside the store-creation transaction). */
+/**
+ * Start the free trial for a new store (call inside the store-creation
+ * transaction). The trial uses the first plan currently offered.
+ */
 export async function startTrial(tx: Prisma.TransactionClient, storeId: string) {
-  const plan = await tx.plan.findUnique({ where: { key: TRIAL_PLAN_KEY }, select: { id: true } });
-  if (!plan) throw new Error(`Plan "${TRIAL_PLAN_KEY}" is missing; run the migrations.`);
+  const plan = await tx.plan.findFirst({
+    where: { isActive: true },
+    orderBy: { sortOrder: "asc" },
+    select: { id: true },
+  });
+  if (!plan) throw new Error("No active plan to start a trial on; enable one on /admin/plans.");
   return tx.subscription.create({
     data: {
       storeId,
@@ -99,9 +104,13 @@ export async function assertCanAddProduct(storeId: string, excludeProductId?: st
   }
   const limit = sub.plan.maxProducts;
   if (limit !== null && (await countBillableProducts(storeId, excludeProductId)) >= limit) {
+    const bigger = await db.plan.count({
+      where: { isActive: true, OR: [{ maxProducts: null }, { maxProducts: { gt: limit } }] },
+    });
     throw new AppError(
       "LIMIT_REACHED",
-      `The ${sub.plan.name} plan allows ${limit.toLocaleString("en-US")} products. Archive some or upgrade your plan.`,
+      `The ${sub.plan.name} plan allows ${limit.toLocaleString("en-US")} products. ` +
+        (bigger ? "Archive some or upgrade your plan." : "Archive some products to add new ones."),
     );
   }
 }
@@ -111,7 +120,7 @@ export async function assertPlanAllowsCustomDomain(storeId: string) {
   if (sub && !sub.plan.customDomain) {
     throw new AppError(
       "LIMIT_REACHED",
-      `Custom domains aren't included in the ${sub.plan.name} plan. Upgrade to connect your own domain.`,
+      `Custom domains aren't included in the ${sub.plan.name} plan.`,
       "hostname",
     );
   }

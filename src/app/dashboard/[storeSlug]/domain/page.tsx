@@ -20,7 +20,7 @@ import {
 import { formatDateTime } from "@/lib/datetime";
 import { storeUrl } from "@/lib/hosts";
 import { storeHostname } from "@/lib/site";
-import { getSubscription } from "@/server/billing/service";
+import { getSubscription, listPlans } from "@/server/billing/service";
 import { domainProviderName, getStoreDomain } from "@/server/domains/service";
 import { getStoreContext } from "@/server/tenant/context";
 
@@ -29,8 +29,13 @@ export const metadata: Metadata = { title: "Domain" };
 export default async function DomainPage({ params }: PageProps<"/dashboard/[storeSlug]/domain">) {
   const { storeSlug } = await params;
   const { store } = await getStoreContext(storeSlug, "domains:manage");
-  const [domain, subscription] = await Promise.all([getStoreDomain(store.id), getSubscription(store.id)]);
+  const [domain, subscription, plans] = await Promise.all([
+    getStoreDomain(store.id),
+    getSubscription(store.id),
+    listPlans(),
+  ]);
   const planAllows = !subscription || subscription.plan.customDomain;
+  const domainPlans = plans.filter((p) => p.customDomain);
   const active = domain?.status === "ACTIVE";
 
   return (
@@ -71,12 +76,14 @@ export default async function DomainPage({ params }: PageProps<"/dashboard/[stor
             ) : (
               <div className="grid justify-items-start gap-3">
                 <p className="text-sm text-muted-foreground">
-                  Custom domains are included in the Business and Premium plans. You&apos;re on{" "}
-                  {subscription?.plan.name}.
+                  Custom domains aren&apos;t included in your {subscription?.plan.name} plan
+                  {domainPlans.length > 0 && <> — they come with {domainPlans.map((p) => p.name).join(" and ")}</>}.
                 </p>
-                <Button asChild>
-                  <Link href={`/dashboard/${store.slug}/billing`}>Upgrade your plan</Link>
-                </Button>
+                {domainPlans.length > 0 && (
+                  <Button asChild>
+                    <Link href={`/dashboard/${store.slug}/billing`}>Upgrade your plan</Link>
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>

@@ -159,12 +159,16 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
       <section className="grid gap-3" aria-labelledby="plans-heading">
         <div>
           <h2 id="plans-heading" className="text-lg font-semibold">
-            Plans
+            {plans.length > 1 ? "Plans" : "Pay for your plan"}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {subscription.status === "TRIAL"
-              ? "Try any plan for free during your trial, then pay for the one you want to keep."
-              : "Paying for a different plan switches you to it as soon as the payment is confirmed."}
+            {plans.length > 1
+              ? subscription.status === "TRIAL"
+                ? "Try any plan for free during your trial, then pay for the one you want to keep."
+                : "Paying for a different plan switches you to it as soon as the payment is confirmed."
+              : subscription.status === "TRIAL"
+                ? "Pay before your trial ends to keep your store online. Paying for several months at once means fewer renewals."
+                : "Pay for one or more months at a time. Renewals extend your current period."}
           </p>
         </div>
         <PlanCards

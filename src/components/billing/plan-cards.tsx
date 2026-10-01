@@ -53,7 +53,7 @@ export function PlanCards({ storeId, plans, currentPlanKey, inTrial, awaitingRev
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className={cn("grid gap-4", plans.length === 1 ? "max-w-md" : "md:grid-cols-3")}>
       {plans.map((plan) => {
         const current = plan.key === currentPlanKey;
         const m = months[plan.key] ?? 1;
@@ -68,7 +68,7 @@ export function PlanCards({ storeId, plans, currentPlanKey, inTrial, awaitingRev
             <div className="grid gap-1">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="font-semibold">{plan.name}</h3>
-                {current && <Badge>{inTrial ? "Trial plan" : "Current"}</Badge>}
+                {current && plans.length > 1 && <Badge>{inTrial ? "Trial plan" : "Current"}</Badge>}
               </div>
               {plan.description && <p className="text-sm text-muted-foreground">{plan.description}</p>}
             </div>

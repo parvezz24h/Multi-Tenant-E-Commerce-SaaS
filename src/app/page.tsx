@@ -101,6 +101,8 @@ function SectionHeading({
 export default async function Home() {
   const [session, plans] = await Promise.all([getSession(), listPlans()]);
   const signedIn = Boolean(session);
+  const domainPlanNames = plans.filter((p) => p.customDomain).map((p) => p.name);
+  const features = FEATURES.filter((f) => f.title !== "Your own domain" || domainPlanNames.length > 0);
   const primaryHref = signedIn ? "/dashboard" : "/sign-up";
 
   return (
@@ -160,7 +162,7 @@ export default async function Home() {
               body="Made for how people in Bangladesh actually buy: on their phones, paying cash at the door."
             />
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {FEATURES.map(({ icon: Icon, title, body }) => (
+              {features.map(({ icon: Icon, title, body }) => (
                 <li key={title} className="grid content-start gap-3 rounded-2xl border bg-background p-6">
                   <span className="flex size-10 items-center justify-center rounded-lg border bg-muted/50">
                     <Icon className="size-5" aria-hidden />
@@ -202,7 +204,7 @@ export default async function Home() {
               <SectionHeading
                 id="pricing-heading"
                 eyebrow="Pricing"
-                title="Simple monthly plans"
+                title={plans.length > 1 ? "Simple monthly plans" : "One simple plan"}
                 body={`Try everything free for ${TRIAL_DAYS} days. Pay monthly with bKash, Nagad or bank transfer. Cancel any time.`}
               />
               <Pricing
@@ -225,7 +227,11 @@ export default async function Home() {
         <section aria-labelledby="faq-heading" className="scroll-mt-20 py-24" id="faq">
           <div className="mx-auto grid w-full max-w-3xl gap-10 px-4">
             <SectionHeading id="faq-heading" eyebrow="FAQ" title="Questions sellers ask" />
-            <Faq />
+            <Faq
+              trialPlanName={plans[0]?.name ?? "free"}
+              domainPlanNames={domainPlanNames}
+              multiplePlans={plans.length > 1}
+            />
           </div>
         </section>
 
