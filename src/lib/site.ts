@@ -2,6 +2,12 @@ export const siteConfig = {
   name: "ShopCreatorBD",
   description: "Launch your own online store in minutes — built for Bangladeshi businesses.",
   rootDomain: process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "shopcreatorbd.vercel.app",
+  /** Platform contact details shown on /contact. */
+  contact: {
+    email: "parvezz24h@gmail.com",
+    phone: "+8801736194336",
+    address: "House-2729, Road-22/1, Khilkhet, Dhaka-1229",
+  },
 };
 
 /** Public platform hostname for a store, e.g. `rahim-fashion.shopcreatorbd.vercel.app`. */

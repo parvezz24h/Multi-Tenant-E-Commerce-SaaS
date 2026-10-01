@@ -3,12 +3,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 
-const NAV = [
-  { href: "#features", label: "Features" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#faq", label: "FAQ" },
-];
+import { MobileNav, SiteNav } from "./site-nav";
 
 export function Logo() {
   return <BrandLogo priority />;
@@ -19,17 +14,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
     <header className="sticky top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Logo />
-        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-          {NAV.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <SiteNav />
         <div className="ml-auto flex items-center gap-2">
           {signedIn ? (
             <Button asChild>
@@ -45,6 +30,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
               </Button>
             </>
           )}
+          <MobileNav signedIn={signedIn} />
         </div>
       </div>
     </header>

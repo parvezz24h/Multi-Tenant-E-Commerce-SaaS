@@ -73,7 +73,7 @@ export function Pricing({ plans, signedIn }: { plans: Plan[]; signedIn: boolean 
                 </li>
               ))}
             </ul>
-            <Button asChild size="lg" variant={featured ? "default" : "outline"}>
+            <Button asChild size="lg" variant={featured || plans.length === 1 ? "default" : "outline"}>
               <Link href={cta}>Start {TRIAL_DAYS}-day free trial</Link>
             </Button>
           </div>
