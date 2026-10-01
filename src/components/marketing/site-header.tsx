@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 
-import { MobileNav, SiteNav } from "./site-nav";
+import { MobileNav, SignedOutActions, SiteNav } from "./site-nav";
 
 export function Logo() {
   return <BrandLogo priority />;
@@ -21,14 +21,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
               <Link href="/dashboard">Go to dashboard</Link>
             </Button>
           ) : (
-            <>
-              <Button size="lg" variant="ghost" asChild className="hidden px-4 sm:inline-flex">
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
-              <Button size="lg" asChild className="px-4 shadow-sm shadow-primary/25">
-                <Link href="/sign-up">Start free trial</Link>
-              </Button>
-            </>
+            <SignedOutActions />
           )}
           <MobileNav signedIn={signedIn} />
         </div>

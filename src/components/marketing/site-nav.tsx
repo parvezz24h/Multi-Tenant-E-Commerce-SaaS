@@ -86,16 +86,49 @@ export function MobileNav({ signedIn }: { signedIn: boolean }) {
             </Button>
           ) : (
             <>
-              <Button size="xl" asChild>
-                <Link href="/sign-up">Start free trial</Link>
-              </Button>
-              <Button size="xl" variant="outline" asChild>
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
+              {pathname !== "/sign-up" && (
+                <Button size="xl" asChild>
+                  <Link href="/sign-up">Start free trial</Link>
+                </Button>
+              )}
+              {pathname !== "/sign-in" && (
+                <Button size="xl" variant="outline" asChild>
+                  <Link href="/sign-in">Sign in</Link>
+                </Button>
+              )}
             </>
           )}
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+/**
+ * Header buttons for signed-out visitors. The button for the page you're on
+ * (sign in / sign up) is hidden; on /sign-up, "Sign in" is the only button,
+ * so it stays visible on small screens too.
+ */
+export function SignedOutActions() {
+  const pathname = usePathname();
+  const onSignUp = pathname === "/sign-up";
+  return (
+    <>
+      {pathname !== "/sign-in" && (
+        <Button
+          size="lg"
+          variant={onSignUp ? "outline" : "ghost"}
+          asChild
+          className={cn("px-4", !onSignUp && "hidden sm:inline-flex")}
+        >
+          <Link href="/sign-in">Sign in</Link>
+        </Button>
+      )}
+      {!onSignUp && (
+        <Button size="lg" asChild className="px-4 shadow-sm shadow-primary/25">
+          <Link href="/sign-up">Start free trial</Link>
+        </Button>
+      )}
+    </>
   );
 }

@@ -1,15 +1,20 @@
 import { redirect } from "next/navigation";
 
-import { BrandLogo } from "@/components/brand";
+import { SiteFooter } from "@/components/marketing/site-footer";
+import { SiteHeader } from "@/components/marketing/site-header";
 import { getSession } from "@/server/auth/session";
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   if (await getSession()) redirect("/dashboard");
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 bg-muted/40 px-4 py-12">
-      <BrandLogo className="text-xl" markClassName="size-10" priority />
-      <div className="w-full max-w-sm">{children}</div>
+    <div className="flex flex-1 flex-col">
+      {/* Same header as the marketing pages; signed-in users never get here. */}
+      <SiteHeader signedIn={false} />
+      <main className="flex flex-1 items-center justify-center bg-muted/40 px-4 py-12">
+        <div className="w-full max-w-sm">{children}</div>
+      </main>
+      <SiteFooter />
     </div>
   );
 }
