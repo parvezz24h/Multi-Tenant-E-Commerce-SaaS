@@ -21,7 +21,14 @@ export type ThemeHeaderProps = {
   cartCount: number;
 };
 
-export type ThemeFooterProps = { store: StorefrontStore; theme: ResolvedTheme };
+export type ThemeFooterProps = {
+  store: StorefrontStore;
+  theme: ResolvedTheme;
+  categories: StorefrontCategory[];
+};
+
+/** Reassurance strip (COD, delivery, tracking) shown under the hero. */
+export type ThemeTrustBarProps = { store: StorefrontStore };
 
 export type ThemeHeroProps = { store: StorefrontStore; theme: ResolvedTheme };
 
@@ -47,5 +54,6 @@ export type ThemeDefinition = {
     Hero: ComponentType<ThemeHeroProps>;
     ProductCard: ComponentType<ThemeProductCardProps>;
     CategoryList: ComponentType<ThemeCategoryListProps>;
+    TrustBar: ComponentType<ThemeTrustBarProps>;
   };
 };

@@ -1,3 +1,4 @@
+import { SearchX } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -87,6 +88,9 @@ export default async function ProductsPage({
         </ul>
       ) : (
         <div className="grid justify-items-center gap-3 rounded-xl border border-dashed p-12 text-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <SearchX className="size-5" aria-hidden />
+          </span>
           <p className="text-muted-foreground">No products match your search.</p>
           <Button variant="outline" asChild>
             <Link href="/products">Clear filters</Link>

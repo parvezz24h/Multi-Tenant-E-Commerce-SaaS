@@ -52,7 +52,7 @@ export default async function StorefrontLayout({
     <div style={style} className="flex flex-1 flex-col">
       <Header store={store} theme={theme} categories={categories} cartCount={cart.itemCount} />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">{children}</main>
-      <Footer store={store} theme={theme} />
+      <Footer store={store} theme={theme} categories={categories} />
     </div>
   );
 }

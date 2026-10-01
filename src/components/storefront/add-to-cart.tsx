@@ -46,9 +46,9 @@ export function AddToCart({ storeId, productId, maxQuantity }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex items-center gap-3">
       <QuantityStepper value={quantity} max={maxQuantity} onChange={setQuantity} disabled={pending} />
-      <Button size="lg" onClick={add} disabled={pending} className="flex-1 sm:flex-none">
+      <Button size="lg" onClick={add} disabled={pending} className="flex-1 sm:max-w-xs">
         {pending ? "Adding…" : "Add to cart"}
       </Button>
     </div>

@@ -1,9 +1,12 @@
-import { Search, ShoppingBag } from "lucide-react";
+import { PackageSearch, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { Input } from "@/components/ui/input";
 import type { ThemeHeaderProps } from "@/themes/types";
+
+import { CategoryNav, CategoryNavFallback } from "./category-nav";
 
 export function ModernHeader({ store, theme, categories, cartCount }: ThemeHeaderProps) {
   return (
@@ -49,6 +52,13 @@ export function ModernHeader({ store, theme, categories, cartCount }: ThemeHeade
         </form>
 
         <Link
+          href="/track"
+          className="hidden items-center gap-1.5 rounded-full px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground md:inline-flex"
+        >
+          <PackageSearch className="size-4" aria-hidden />
+          Track order
+        </Link>
+        <Link
           href="/cart"
           className="relative ml-auto inline-flex size-10 items-center justify-center rounded-full hover:bg-muted sm:ml-0"
           aria-label={`Cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
@@ -71,23 +81,9 @@ export function ModernHeader({ store, theme, categories, cartCount }: ThemeHeade
 
       {categories.length > 0 && (
         <nav aria-label="Categories" className="border-t">
-          <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 text-sm">
-            <li>
-              <Link href="/products" className="block rounded-full px-3 py-1 whitespace-nowrap hover:bg-muted">
-                All products
-              </Link>
-            </li>
-            {categories.map((c) => (
-              <li key={c.id}>
-                <Link
-                  href={`/products?category=${encodeURIComponent(c.slug)}`}
-                  className="block rounded-full px-3 py-1 whitespace-nowrap text-muted-foreground hover:bg-muted hover:text-foreground"
-                >
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <Suspense fallback={<CategoryNavFallback categories={categories} />}>
+            <CategoryNav categories={categories} />
+          </Suspense>
         </nav>
       )}
     </header>

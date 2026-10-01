@@ -6,6 +6,7 @@ import { ModernFooter } from "./modern/footer";
 import { ModernHeader } from "./modern/header";
 import { ModernHero } from "./modern/hero";
 import { ModernProductCard } from "./modern/product-card";
+import { ModernTrustBar } from "./modern/trust-bar";
 import type { ResolvedTheme, ThemeDefinition } from "./types";
 
 const modern: ThemeDefinition = {
@@ -22,6 +23,7 @@ const modern: ThemeDefinition = {
     Hero: ModernHero,
     ProductCard: ModernProductCard,
     CategoryList: ModernCategoryList,
+    TrustBar: ModernTrustBar,
   },
 };
 

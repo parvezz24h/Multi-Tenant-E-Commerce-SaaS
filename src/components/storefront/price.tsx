@@ -6,9 +6,11 @@ type Props = {
   compareAtPrice?: number | null;
   className?: string;
   size?: "sm" | "lg";
+  /** Hide the "% off" text (e.g. when a badge already shows it). */
+  hideDiscount?: boolean;
 };
 
-export function Price({ price, compareAtPrice, className, size = "sm" }: Props) {
+export function Price({ price, compareAtPrice, className, size = "sm", hideDiscount = false }: Props) {
   const discount = discountPercent(price, compareAtPrice);
   return (
     <div className={cn("flex flex-wrap items-baseline gap-x-2", className)}>
@@ -21,7 +23,7 @@ export function Price({ price, compareAtPrice, className, size = "sm" }: Props) 
             <span className="sr-only">Was </span>
             {formatMoney(compareAtPrice!)}
           </span>
-          <span className="text-sm font-medium text-primary">{discount}% off</span>
+          {!hideDiscount && <span className="text-sm font-medium text-primary">{discount}% off</span>}
         </>
       )}
     </div>

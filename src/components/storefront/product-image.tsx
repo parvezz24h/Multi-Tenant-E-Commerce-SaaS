@@ -30,7 +30,7 @@ export function ProductImage({ url, alt, className, sizes, priority }: Props) {
       ) : (
         <div
           aria-hidden
-          className="flex size-full items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 text-[40cqw] font-semibold text-primary/60"
+          className="flex size-full items-center justify-center bg-gradient-to-br from-primary/15 to-primary/5 text-[28cqw] font-semibold text-primary/40"
         >
           {alt.trim().charAt(0).toUpperCase() || "?"}
         </div>

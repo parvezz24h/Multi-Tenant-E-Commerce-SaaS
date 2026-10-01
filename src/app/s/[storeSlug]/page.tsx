@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { requireOpenStore } from "@/server/storefront/context";
@@ -5,7 +6,7 @@ import { getFeaturedProducts, listCategories } from "@/server/storefront/service
 
 export default async function StorefrontHomePage({ params }: PageProps<"/s/[storeSlug]">) {
   const { store, theme, components } = await requireOpenStore((await params).storeSlug);
-  const { Hero, CategoryList, ProductCard } = components;
+  const { Hero, TrustBar, CategoryList, ProductCard } = components;
   const [categories, featured] = await Promise.all([
     listCategories(store.id),
     getFeaturedProducts(store.id),
@@ -13,7 +14,10 @@ export default async function StorefrontHomePage({ params }: PageProps<"/s/[stor
 
   return (
     <div className="grid gap-12">
-      <Hero store={store} theme={theme} />
+      <div className="grid gap-4">
+        <Hero store={store} theme={theme} />
+        <TrustBar store={store} />
+      </div>
 
       {categories.length > 0 && (
         <section aria-labelledby="categories-heading" className="grid gap-4">
@@ -30,8 +34,11 @@ export default async function StorefrontHomePage({ params }: PageProps<"/s/[stor
             Featured products
           </h2>
           {featured.length > 0 && (
-            <Link href="/products" className="text-sm font-medium text-primary hover:underline">
-              View all
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
+              View all <ArrowRight className="size-4" aria-hidden />
             </Link>
           )}
         </div>
