@@ -5,6 +5,8 @@ import path from "node:path";
 
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
+import { readS3Settings } from "./s3-config";
+
 /**
  * File storage behind a tiny interface so product images can live on local
  * disk in development and in S3 / Cloudflare R2 in production.
@@ -40,15 +42,13 @@ const localDriver: StorageDriver = {
 };
 
 function s3Driver(): StorageDriver {
-  const bucket = required("S3_BUCKET");
-  const publicBase = required("S3_PUBLIC_URL").replace(/\/+$/, "");
+  const config = readS3Settings();
+  const bucket = config.bucket;
+  const publicBase = config.publicBaseUrl;
   const client = new S3Client({
-    region: process.env.S3_REGION || "auto",
-    endpoint: process.env.S3_ENDPOINT || undefined,
-    credentials: {
-      accessKeyId: required("S3_ACCESS_KEY_ID"),
-      secretAccessKey: required("S3_SECRET_ACCESS_KEY"),
-    },
+    region: config.region,
+    endpoint: config.endpoint,
+    credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey },
   });
 
   return {
@@ -68,12 +68,6 @@ function s3Driver(): StorageDriver {
     },
     publicUrl: (key) => `${publicBase}/${key}`,
   };
-}
-
-function required(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} must be set when STORAGE_DRIVER=s3`);
-  return value;
 }
 
 let driver: StorageDriver | undefined;

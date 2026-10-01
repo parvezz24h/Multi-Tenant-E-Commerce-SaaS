@@ -17,6 +17,7 @@
     "make-admin": "tsx scripts/make-super-admin.ts",
     "seed:demo": "tsx scripts/seed-demo-catalog.ts",
     "billing:sync": "tsx scripts/sync-subscriptions.ts",
+    "storage:check": "tsx scripts/check-storage.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

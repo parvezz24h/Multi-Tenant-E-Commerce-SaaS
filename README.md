@@ -63,13 +63,52 @@ which is enough for local development. Merchants add a CNAME
 Store subdomains (`<slug>.<root domain>`) need a domain you own with a wildcard
 record; they don't work on `*.vercel.app`.
 
-### File storage
+### File storage (product images)
 
-Product images use `STORAGE_DRIVER=local` by default: files go to `./.uploads`
-(git-ignored) and are served by `/api/files/...`. In production set
-`STORAGE_DRIVER=s3` and the `S3_*` variables from `.env.example` (works with
-Cloudflare R2 or AWS S3). Uploads are limited to JPG/PNG/WebP up to 5 MB; the type
-is checked from the file's bytes, not its name.
+Locally, uploads go to `./.uploads` (`STORAGE_DRIVER=local`). In production use
+Amazon S3 (or any S3-compatible service such as Cloudflare R2):
+
+1. **Bucket** – create it in the region closest to your users (e.g. `ap-southeast-1`
+   Singapore or `ap-south-1` Mumbai). Keep *Object Ownership: Bucket owner enforced*.
+2. **Public read for images** – under *Block public access*, allow public access
+   granted through bucket policies, then add this bucket policy
+   (replace `YOUR_BUCKET`). Only the `stores/` prefix becomes public:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [{
+       "Sid": "PublicReadProductImages",
+       "Effect": "Allow",
+       "Principal": "*",
+       "Action": "s3:GetObject",
+       "Resource": "arn:aws:s3:::YOUR_BUCKET/stores/*"
+     }]
+   }
+   ```
+
+   Prefer a private bucket? Put CloudFront in front of it and set `S3_PUBLIC_URL`
+   to the CloudFront domain instead.
+3. **IAM user for the app** – with only these permissions:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [{
+       "Effect": "Allow",
+       "Action": ["s3:PutObject", "s3:DeleteObject"],
+       "Resource": "arn:aws:s3:::YOUR_BUCKET/stores/*"
+     }]
+   }
+   ```
+
+4. **Environment** – set `STORAGE_DRIVER=s3`, `S3_BUCKET`, `S3_REGION`,
+   `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` (and `S3_PUBLIC_URL` if using a CDN)
+   in `.env` and in Vercel, then run `pnpm storage:check`.
+
+Uploads are limited to JPG/PNG/WebP up to 5 MB; the type is checked from the
+file's bytes, not its name. Images are served with a one-year immutable cache
+header (every upload gets a new random key).
 
 ## Scripts
 
@@ -86,6 +125,7 @@ is checked from the file's bytes, not its name.
 | `pnpm make-admin`  | Promote a user to `SUPER_ADMIN`             |
 | `pnpm seed:demo`   | Add a demo catalog and orders to a store    |
 | `pnpm billing:sync`| Refresh subscription statuses (cron)        |
+| `pnpm storage:check`| Test the S3 bucket setup end to end        |
 
 ## Project structure
 
