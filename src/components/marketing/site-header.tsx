@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 
-import { MobileNav, SignedOutActions, SiteNav } from "./site-nav";
+import { HeaderFrame, MobileNav, SignedOutActions, SiteNav } from "./site-nav";
 
 export function Logo() {
   return <BrandLogo priority />;
@@ -11,7 +11,7 @@ export function Logo() {
 
 export function SiteHeader({ signedIn }: { signedIn: boolean }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-transparent bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <HeaderFrame>
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Logo />
         <SiteNav />
@@ -26,6 +26,6 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
           <MobileNav signedIn={signedIn} />
         </div>
       </div>
-    </header>
+    </HeaderFrame>
   );
 }
