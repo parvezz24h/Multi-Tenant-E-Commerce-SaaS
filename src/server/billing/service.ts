@@ -109,7 +109,7 @@ export async function assertCanAddProduct(storeId: string, excludeProductId?: st
     });
     throw new AppError(
       "LIMIT_REACHED",
-      `The ${sub.plan.name} plan allows ${limit.toLocaleString("en-US")} products. ` +
+      `Your plan allows ${limit.toLocaleString("en-US")} products. ` +
         (bigger ? "Archive some or upgrade your plan." : "Archive some products to add new ones."),
     );
   }
@@ -120,7 +120,7 @@ export async function assertPlanAllowsCustomDomain(storeId: string) {
   if (sub && !sub.plan.customDomain) {
     throw new AppError(
       "LIMIT_REACHED",
-      `Custom domains aren't included in the ${sub.plan.name} plan.`,
+      "Custom domains aren't included in your plan.",
       "hostname",
     );
   }

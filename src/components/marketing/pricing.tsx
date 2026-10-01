@@ -54,10 +54,13 @@ export function Pricing({ plans, signedIn }: { plans: Plan[]; signedIn: boolean 
                 Most popular
               </span>
             )}
-            <div className="grid gap-2">
-              <h3 className="text-lg font-semibold">{plan.name}</h3>
-              {plan.description && <p className="text-sm text-muted-foreground">{plan.description}</p>}
-            </div>
+            {/* With a single plan its name adds nothing; lead with the price. */}
+            {plans.length > 1 && (
+              <div className="grid gap-2">
+                <h3 className="text-lg font-semibold">{plan.name}</h3>
+                {plan.description && <p className="text-sm text-muted-foreground">{plan.description}</p>}
+              </div>
+            )}
             <p className="flex items-baseline gap-1">
               <span className="text-4xl font-semibold tracking-tight tabular-nums">{formatMoney(plan.priceMonthly)}</span>
               <span className="text-sm text-muted-foreground">/ month</span>

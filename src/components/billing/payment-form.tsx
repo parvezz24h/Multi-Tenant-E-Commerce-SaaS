@@ -18,7 +18,8 @@ type Method = "BKASH" | "NAGAD" | "BANK";
 
 type Props = {
   storeId: string;
-  invoice: { id: string; number: string; amount: number; planName: string; periodMonths: number };
+  /** planName is null when there's only one plan (no need to name it). */
+  invoice: { id: string; number: string; amount: number; planName: string | null; periodMonths: number };
   instructions: { bkash: string | null; nagad: string | null; bank: string | null };
 };
 
@@ -63,8 +64,10 @@ export function PaymentForm({ storeId, invoice, instructions }: Props) {
     <div className="grid gap-5">
       <ol className="grid gap-3 text-sm">
         <li>
-          <span className="font-medium">1. Send {formatMoney(invoice.amount)}</span> for {invoice.planName} (
-          {invoice.periodMonths} {invoice.periodMonths === 1 ? "month" : "months"}).
+          <span className="font-medium">1. Send {formatMoney(invoice.amount)}</span> for{" "}
+          {invoice.planName ? `${invoice.planName} (` : ""}
+          {invoice.periodMonths} {invoice.periodMonths === 1 ? "month" : "months"}
+          {invoice.planName ? ")" : ""}.
         </li>
         <li className="grid gap-2">
           <span className="font-medium">2. Choose how you’ll pay:</span>

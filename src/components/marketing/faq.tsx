@@ -25,7 +25,7 @@ function questions({ trialPlanName, domainPlanNames, multiplePlans }: FaqProps) 
       q: "What does the free trial include?",
       a: multiplePlans
         ? `You get ${TRIAL_DAYS} days free on the ${trialPlanName} plan. You can switch plans during the trial and only pay when you decide to keep your store.`
-        : `You get ${TRIAL_DAYS} days with everything in the ${trialPlanName} plan. You only pay when you decide to keep your store.`,
+        : `You get ${TRIAL_DAYS} days free with every feature included. You only pay when you decide to keep your store.`,
     },
     {
       q: "How do I pay for my subscription?",

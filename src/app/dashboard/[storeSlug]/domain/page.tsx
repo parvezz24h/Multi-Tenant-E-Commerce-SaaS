@@ -76,7 +76,7 @@ export default async function DomainPage({ params }: PageProps<"/dashboard/[stor
             ) : (
               <div className="grid justify-items-start gap-3">
                 <p className="text-sm text-muted-foreground">
-                  Custom domains aren&apos;t included in your {subscription?.plan.name} plan
+                  Custom domains aren&apos;t included in your plan
                   {domainPlans.length > 0 && <> — they come with {domainPlans.map((p) => p.name).join(" and ")}</>}.
                 </p>
                 {domainPlans.length > 0 && (

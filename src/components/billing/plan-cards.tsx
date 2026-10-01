@@ -65,13 +65,15 @@ export function PlanCards({ storeId, plans, currentPlanKey, inTrial, awaitingRev
               current && "border-primary ring-2 ring-primary/15",
             )}
           >
-            <div className="grid gap-1">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-semibold">{plan.name}</h3>
-                {current && plans.length > 1 && <Badge>{inTrial ? "Trial plan" : "Current"}</Badge>}
+            {plans.length > 1 && (
+              <div className="grid gap-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-semibold">{plan.name}</h3>
+                  {current && <Badge>{inTrial ? "Trial plan" : "Current"}</Badge>}
+                </div>
+                {plan.description && <p className="text-sm text-muted-foreground">{plan.description}</p>}
               </div>
-              {plan.description && <p className="text-sm text-muted-foreground">{plan.description}</p>}
-            </div>
+            )}
             <p>
               <span className="text-2xl font-semibold tabular-nums">{formatMoney(plan.priceMonthly)}</span>
               <span className="text-sm text-muted-foreground"> / month</span>
@@ -96,7 +98,7 @@ export function PlanCards({ storeId, plans, currentPlanKey, inTrial, awaitingRev
               )}
               <div className="flex gap-2">
                 <label className="sr-only" htmlFor={`months-${plan.key}`}>
-                  Months to pay for {plan.name}
+                  Months to pay{plans.length > 1 && ` for ${plan.name}`}
                 </label>
                 <select
                   id={`months-${plan.key}`}

@@ -45,6 +45,9 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
   if (!subscription) notFound();
 
   const openInvoice = invoices.find((i) => i.status === "OPEN");
+  // Plan names only mean something when merchants can choose between plans.
+  const showPlanNames = plans.length > 1;
+  const months = (n: number) => `${n} ${n === 1 ? "month" : "months"}`;
   const awaitingReview = Boolean(openInvoice?.submittedAt);
   const endsAt = periodEndsAt(subscription);
   const offlineAt = suspendsAt(subscription);
@@ -73,7 +76,8 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
       <Card>
         <CardHeader>
           <CardTitle className="flex flex-wrap items-center gap-2">
-            {subscription.plan.name} plan <SubscriptionBadge status={subscription.status} />
+            {showPlanNames ? `${subscription.plan.name} plan` : "Your subscription"}{" "}
+            <SubscriptionBadge status={subscription.status} />
           </CardTitle>
           <CardDescription>{dateLine}</CardDescription>
         </CardHeader>
@@ -123,8 +127,8 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
               )}
             </CardTitle>
             <CardDescription>
-              {openInvoice.plan.name} · {openInvoice.periodMonths}{" "}
-              {openInvoice.periodMonths === 1 ? "month" : "months"} · {formatMoney(openInvoice.amount)}
+              {showPlanNames && `${openInvoice.plan.name} · `}
+              {months(openInvoice.periodMonths)} · {formatMoney(openInvoice.amount)}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -146,7 +150,7 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
                   id: openInvoice.id,
                   number: formatInvoiceNumber(openInvoice.number),
                   amount: openInvoice.amount,
-                  planName: openInvoice.plan.name,
+                  planName: showPlanNames ? openInvoice.plan.name : null,
                   periodMonths: openInvoice.periodMonths,
                 }}
                 instructions={paymentInstructions()}
@@ -201,7 +205,7 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
                 <TableHeader>
                   <TableRow>
                     <TableHead>Invoice</TableHead>
-                    <TableHead>Plan</TableHead>
+                    <TableHead>{showPlanNames ? "Plan" : "Period"}</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
@@ -212,7 +216,7 @@ export default async function BillingPage({ params }: PageProps<"/dashboard/[sto
                     <TableRow key={i.id}>
                       <TableCell className="font-mono text-xs">{formatInvoiceNumber(i.number)}</TableCell>
                       <TableCell>
-                        {i.plan.name} · {i.periodMonths} mo
+                        {showPlanNames ? `${i.plan.name} · ${i.periodMonths} mo` : months(i.periodMonths)}
                       </TableCell>
                       <TableCell>{formatDate(i.paidAt ?? i.createdAt)}</TableCell>
                       <TableCell>
