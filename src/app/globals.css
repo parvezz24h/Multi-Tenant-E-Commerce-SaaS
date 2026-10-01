@@ -127,6 +127,12 @@
   html {
     @apply font-sans;
   }
+  /* In-page anchor links (landing page sections) scroll smoothly. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
 }
 /* Shimmer sweep for loading skeletons (see components/ui/skeleton.tsx). */
 @theme {

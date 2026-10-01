@@ -1,84 +1,253 @@
-import { Banknote, MapPin, Smartphone, Store } from "lucide-react";
+import {
+  ArrowRight,
+  Banknote,
+  Boxes,
+  Globe,
+  MapPin,
+  Palette,
+  ShoppingCart,
+  Smartphone,
+} from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Faq } from "@/components/marketing/faq";
+import { Pricing } from "@/components/marketing/pricing";
+import { SiteFooter } from "@/components/marketing/site-footer";
+import { SiteHeader } from "@/components/marketing/site-header";
+import { StorePreview } from "@/components/marketing/store-preview";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site";
+import { TRIAL_DAYS } from "@/lib/subscription";
 import { getSession } from "@/server/auth/session";
+import { listPlans } from "@/server/billing/service";
+
+export const metadata: Metadata = {
+  title: { absolute: `${siteConfig.name} — Your own online store, built for Bangladesh` },
+  description:
+    "Create an online store in minutes. Take Cash on Delivery orders, manage stock and customers, and use your own domain. Free 14-day trial.",
+};
 
 const FEATURES = [
   {
-    icon: Store,
-    title: "Your own store",
-    body: `A ready-made storefront at your-name.${siteConfig.rootDomain}, with your own domain later.`,
+    icon: Smartphone,
+    title: "A store that looks great on phones",
+    body: "Most of your customers shop on mobile. Your storefront is fast and easy to use on any phone.",
   },
   {
     icon: Banknote,
-    title: "Cash on Delivery First",
-    body: "Take COD orders from day one. bKash, Nagad and SSLCommerz are on the way.",
+    title: "Cash on Delivery checkout",
+    body: "Customers order without paying online. Delivery charges are added automatically for inside or outside Dhaka.",
   },
   {
     icon: MapPin,
-    title: "Local addresses",
-    body: "District, upazila and area built in, ready for courier integrations.",
+    title: "Bangladeshi addresses",
+    body: "All 64 districts, upazila and area — the details your courier needs, collected at checkout.",
   },
   {
-    icon: Smartphone,
-    title: "Mobile-first",
-    body: "Storefronts and the merchant dashboard work great on any phone.",
+    icon: ShoppingCart,
+    title: "Orders in one place",
+    body: "See new orders instantly, confirm, ship and mark delivered. Customers can track their order online.",
+  },
+  {
+    icon: Boxes,
+    title: "Stock that keeps itself right",
+    body: "Stock goes down with every order and back up on cancellations, so you never sell what you don't have.",
+  },
+  {
+    icon: Globe,
+    title: "Your own domain",
+    body: "Start with a free store address, then connect yourshop.com or .com.bd whenever you're ready.",
   },
 ];
 
+const STEPS = [
+  {
+    title: "Create your store",
+    body: "Sign up, choose your store name and web address. It takes about a minute.",
+  },
+  {
+    title: "Add your products",
+    body: "Upload photos, set prices and stock, and pick your brand color.",
+  },
+  {
+    title: "Share and start selling",
+    body: "Publish your store and share the link on Facebook, Instagram and WhatsApp.",
+  },
+];
+
+function SectionHeading({
+  eyebrow,
+  title,
+  body,
+  id,
+}: {
+  eyebrow: string;
+  title: string;
+  body?: string;
+  id: string;
+}) {
+  return (
+    <div className="mx-auto grid max-w-2xl gap-3 text-center">
+      <p className="text-sm font-medium text-muted-foreground">{eyebrow}</p>
+      <h2 id={id} className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+        {title}
+      </h2>
+      {body && <p className="text-muted-foreground text-pretty">{body}</p>}
+    </div>
+  );
+}
+
 export default async function Home() {
-  const session = await getSession();
+  const [session, plans] = await Promise.all([getSession(), listPlans()]);
+  const signedIn = Boolean(session);
+  const primaryHref = signedIn ? "/dashboard" : "/sign-up";
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-5">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          {siteConfig.name}
-        </Link>
-        <nav className="flex items-center gap-2">
-          {session ? (
-            <Button asChild>
-              <Link href="/dashboard">Go to dashboard</Link>
-            </Button>
-          ) : (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/sign-in">Sign in</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/sign-up">Start free</Link>
-              </Button>
-            </>
-          )}
-        </nav>
-      </header>
+      <SiteHeader signedIn={signedIn} />
 
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4">
-        <section className="flex flex-col items-start gap-6 py-16 sm:py-24">
-          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-            Move your business from Facebook to your own online store.
-          </h1>
-          <p className="max-w-xl text-lg text-muted-foreground text-pretty">
-            {siteConfig.description} Add products, take orders and manage everything from one
-            dashboard.
-          </p>
-          <Button size="lg" asChild>
-            <Link href={session ? "/dashboard" : "/sign-up"}>Create your store</Link>
-          </Button>
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="relative overflow-hidden">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--color-muted),transparent_60%)]"
+          />
+          <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 pt-16 pb-24 lg:grid-cols-[1fr_1.1fr] lg:pt-24">
+            <div className="grid justify-items-start gap-6">
+              <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                Built for Bangladeshi sellers
+              </span>
+              <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+                Move your business from Facebook to your own online store.
+              </h1>
+              <p className="max-w-xl text-lg text-muted-foreground text-pretty">
+                {siteConfig.name} gives you a ready-made store with Cash on Delivery checkout, order
+                management and stock tracking — no coding, no developer.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button size="lg" asChild>
+                  <Link href={primaryHref}>
+                    {signedIn ? "Go to your dashboard" : "Start your free trial"} <ArrowRight />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <a href="#how-it-works">See how it works</a>
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {TRIAL_DAYS} days free · No card needed · Pay later with bKash or Nagad
+              </p>
+            </div>
+            <div className="lg:pl-6">
+              <StorePreview />
+              <span className="sr-only">
+                Illustration: a sample online store with products and a new Cash on Delivery order.
+              </span>
+            </div>
+          </div>
         </section>
 
-        <section className="grid gap-6 pb-20 sm:grid-cols-2">
-          {FEATURES.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="rounded-xl border p-5">
-              <Icon className="mb-3 size-5 text-muted-foreground" aria-hidden />
-              <h2 className="font-medium">{title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+        {/* Features */}
+        <section aria-labelledby="features-heading" className="scroll-mt-20 border-t bg-muted/30 py-24" id="features">
+          <div className="mx-auto grid w-full max-w-6xl gap-14 px-4">
+            <SectionHeading
+              id="features-heading"
+              eyebrow="Features"
+              title="Everything you need to sell online"
+              body="Made for how people in Bangladesh actually buy: on their phones, paying cash at the door."
+            />
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map(({ icon: Icon, title, body }) => (
+                <li key={title} className="grid content-start gap-3 rounded-2xl border bg-background p-6">
+                  <span className="flex size-10 items-center justify-center rounded-lg border bg-muted/50">
+                    <Icon className="size-5" aria-hidden />
+                  </span>
+                  <h3 className="font-semibold">{title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Palette className="size-4" aria-hidden />
+              Ready-made theme in your brand color — change it any time.
             </div>
-          ))}
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section aria-labelledby="how-heading" className="scroll-mt-20 py-24" id="how-it-works">
+          <div className="mx-auto grid w-full max-w-6xl gap-14 px-4">
+            <SectionHeading id="how-heading" eyebrow="How it works" title="Your store is live in three steps" />
+            <ol className="grid gap-6 md:grid-cols-3">
+              {STEPS.map((step, i) => (
+                <li key={step.title} className="grid content-start gap-3">
+                  <span className="flex size-10 items-center justify-center rounded-full bg-foreground text-sm font-semibold text-background">
+                    {i + 1}
+                  </span>
+                  <h3 className="text-lg font-semibold">{step.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        {plans.length > 0 && (
+          <section aria-labelledby="pricing-heading" className="scroll-mt-20 border-t bg-muted/30 py-24" id="pricing">
+            <div className="mx-auto grid w-full max-w-6xl gap-14 px-4">
+              <SectionHeading
+                id="pricing-heading"
+                eyebrow="Pricing"
+                title="Simple monthly plans"
+                body={`Try everything free for ${TRIAL_DAYS} days. Pay monthly with bKash, Nagad or bank transfer. Cancel any time.`}
+              />
+              <Pricing
+                signedIn={signedIn}
+                plans={plans.map(({ key, name, description, priceMonthly, maxProducts, maxStaff, customDomain }) => ({
+                  key,
+                  name,
+                  description,
+                  priceMonthly,
+                  maxProducts,
+                  maxStaff,
+                  customDomain,
+                }))}
+              />
+            </div>
+          </section>
+        )}
+
+        {/* FAQ */}
+        <section aria-labelledby="faq-heading" className="scroll-mt-20 py-24" id="faq">
+          <div className="mx-auto grid w-full max-w-3xl gap-10 px-4">
+            <SectionHeading id="faq-heading" eyebrow="FAQ" title="Questions sellers ask" />
+            <Faq />
+          </div>
+        </section>
+
+        {/* Final call to action */}
+        <section className="px-4 pb-24">
+          <div className="mx-auto grid w-full max-w-6xl justify-items-center gap-6 rounded-3xl bg-foreground px-6 py-16 text-center text-background">
+            <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+              Your customers are already online. Is your store?
+            </h2>
+            <p className="max-w-xl text-background/70">
+              Start free today. Set up your store in minutes and take your first Cash on Delivery order this week.
+            </p>
+            <Button size="lg" variant="secondary" asChild>
+              <Link href={primaryHref}>
+                {signedIn ? "Go to your dashboard" : "Create your store"} <ArrowRight />
+              </Link>
+            </Button>
+          </div>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
