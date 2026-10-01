@@ -54,7 +54,7 @@ export function CategoryForm({ storeId, categoryId, defaults = EMPTY, onDone, on
   const id = (field: string) => `${prefix}-${field}`;
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
+    <form ref={formRef} method="post" onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
       {state.ok === false && state.message && (
         <p className="text-sm text-destructive sm:col-span-2">{state.message}</p>
       )}

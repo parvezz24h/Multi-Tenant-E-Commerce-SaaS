@@ -23,7 +23,7 @@ export function TrackOrderForm({ storeId }: { storeId: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4" noValidate>
+    <form method="post" onSubmit={onSubmit} className="grid gap-4" noValidate>
       {state.message && (
         <Alert variant="destructive">
           <AlertDescription>{state.message}</AlertDescription>

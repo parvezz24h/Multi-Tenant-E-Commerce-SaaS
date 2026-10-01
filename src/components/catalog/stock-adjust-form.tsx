@@ -71,7 +71,7 @@ export function StockAdjustForm({ storeId, productId, currentStock, idPrefix = "
   const reasonId = `${idPrefix}-reason`;
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="grid gap-4">
+    <form ref={formRef} method="post" onSubmit={onSubmit} className="grid gap-4">
       <p className="text-sm">
         Current stock: <span className="font-medium tabular-nums">{currentStock}</span>
       </p>

@@ -70,7 +70,7 @@ export function AuthForm({ mode, next }: { mode: Mode; next: string }) {
         <CardDescription>{copy.description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="grid gap-4">
+        <form method="post" onSubmit={onSubmit} className="grid gap-4">
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>

@@ -66,7 +66,7 @@ export function StoreSettingsForm({ storeId, districts, defaults }: Props) {
   });
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-6">
+    <form method="post" onSubmit={onSubmit} className="grid gap-6">
       {state.ok === false && state.message && (
         <Alert variant="destructive">
           <AlertDescription>{state.message}</AlertDescription>

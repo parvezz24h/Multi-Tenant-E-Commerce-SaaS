@@ -34,7 +34,7 @@ export function MerchantNoteForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-2">
+    <form method="post" onSubmit={onSubmit} className="grid gap-2">
       <label htmlFor="merchant-note" className="sr-only">
         Internal note
       </label>

@@ -76,7 +76,7 @@ export function ProductForm({ storeId, productId, defaults, categories, urlPrefi
   });
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_20rem]">
+    <form method="post" onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_20rem]">
       <div className="grid content-start gap-6">
         {state.ok === false && state.message && (
           <Alert variant="destructive">

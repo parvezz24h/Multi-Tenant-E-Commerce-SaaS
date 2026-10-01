@@ -37,6 +37,9 @@ export function CheckoutForm({ storeId, districts, rates, lines, subtotal }: Pro
   const delivery = district ? deliveryChargeFor(district, rates) : null;
 
   // Submit manually so React doesn't reset the form (and lose input) on errors.
+  // The form also has method="post": if it's submitted before the JavaScript
+  // has loaded, the browser posts instead of putting personal details in a
+  // GET query string (URL, history, server logs).
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -51,7 +54,7 @@ export function CheckoutForm({ storeId, districts, rates, lines, subtotal }: Pro
   });
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[1fr_22rem]" noValidate>
+    <form method="post" onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[1fr_22rem]" noValidate>
       <div className="grid content-start gap-6">
         {state.ok === false && state.message && (
           <Alert variant="destructive">

@@ -35,7 +35,7 @@ export function CustomerForm({ storeId, customerId, defaults }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4">
+    <form method="post" onSubmit={onSubmit} className="grid gap-4">
       <FormField id="name" label="Name" errors={errors.name}>
         <Input id="name" name="name" defaultValue={defaults.name} required maxLength={80} />
       </FormField>
