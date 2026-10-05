@@ -50,7 +50,8 @@ export type DnsRecord = {
   /** Host/name as most DNS panels expect it, relative to the apex ("@" = apex). */
   name: string;
   value: string;
-  purpose: "routing" | "verification";
+  /** "redirect" routes the paired www/apex host, which forwards to the domain. */
+  purpose: "routing" | "redirect" | "verification";
 };
 
 export type DnsTargets = { cname: string; aRecord: string };
@@ -64,18 +65,39 @@ export function defaultDnsTargets(): DnsTargets {
 }
 
 /**
+ * The host that should forward to the connected one: the apex for
+ * `www.shop.com`, `www.shop.com` for the apex. Other subdomains
+ * (`shop.rahim.com`) have none.
+ */
+export function redirectDomainFor(domain: ParsedDomain): ParsedDomain | null {
+  if (domain.subdomain === "www") return { hostname: domain.apex, apex: domain.apex, subdomain: "" };
+  if (domain.subdomain === "") return { hostname: `www.${domain.apex}`, apex: domain.apex, subdomain: "www" };
+  return null;
+}
+
+function routingRecord(domain: ParsedDomain, targets: DnsTargets, purpose: DnsRecord["purpose"]): DnsRecord {
+  return domain.subdomain
+    ? { type: "CNAME", name: domain.subdomain, value: targets.cname, purpose }
+    : { type: "A", name: "@", value: targets.aRecord, purpose };
+}
+
+/**
  * Records the merchant must add: an A record for an apex domain, a CNAME for
- * a subdomain, plus any TXT challenges the hosting provider asks for.
+ * a subdomain (the same for the paired redirect host, if any), plus any TXT
+ * challenges the hosting provider asks for.
  */
 export function dnsRecordsFor(
   domain: ParsedDomain,
   targets: DnsTargets,
   challenges: { type: string; domain: string; value: string }[] = [],
+  redirect: ParsedDomain | null = null,
 ): DnsRecord[] {
-  const routing: DnsRecord = domain.subdomain
-    ? { type: "CNAME", name: domain.subdomain, value: targets.cname, purpose: "routing" }
-    : { type: "A", name: "@", value: targets.aRecord, purpose: "routing" };
+  const routing = [
+    routingRecord(domain, targets, "routing"),
+    ...(redirect ? [routingRecord(redirect, targets, "redirect")] : []),
+  ];
 
+  const seen = new Set<string>();
   const verification = challenges
     .filter((c) => c.type.toUpperCase() === "TXT")
     .map<DnsRecord>((c) => ({
@@ -83,9 +105,15 @@ export function dnsRecordsFor(
       name: relativeName(c.domain, domain.apex),
       value: c.value,
       purpose: "verification",
-    }));
+    }))
+    .filter((r) => {
+      const key = `${r.name} ${r.value}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
-  return [routing, ...verification];
+  return [...routing, ...verification];
 }
 
 /** "_vercel.rahimfashion.com" relative to "rahimfashion.com" → "_vercel". */

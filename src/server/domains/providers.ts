@@ -25,13 +25,20 @@ export type DomainCheck = {
 export interface DomainProvider {
   readonly name: "vercel" | "dns";
   add(domain: ParsedDomain): Promise<{ challenges: Challenge[] }>;
+  /** Attach `domain` so it permanently redirects to `target` (www ↔ apex). */
+  addRedirect(domain: ParsedDomain, target: ParsedDomain): Promise<{ challenges: Challenge[] }>;
   check(domain: ParsedDomain): Promise<DomainCheck>;
   remove(domain: ParsedDomain): Promise<void>;
 }
 
 // ── Vercel ──────────────────────────────────────────────────
 
-type VercelProjectDomain = { name: string; verified: boolean; verification?: Challenge[] };
+type VercelProjectDomain = {
+  name: string;
+  verified: boolean;
+  redirect?: string | null;
+  verification?: Challenge[];
+};
 type VercelConfig = {
   misconfigured: boolean;
   recommendedCNAME?: { rank: number; value: string }[];
@@ -66,20 +73,40 @@ class VercelProvider implements DomainProvider {
   }
 
   async add(domain: ParsedDomain) {
-    const { status, json } = await this.call<VercelProjectDomain>("POST", `/v10${this.project()}`, {
-      name: domain.hostname,
-    });
+    return this.attach(domain, { name: domain.hostname });
+  }
+
+  async addRedirect(domain: ParsedDomain, target: ParsedDomain) {
+    const redirect = { redirect: target.hostname, redirectStatusCode: 308 };
+    return this.attach(domain, { name: domain.hostname, ...redirect }, redirect);
+  }
+
+  /** Add a domain to the project; if it's already there, bring its redirect in line. */
+  private async attach(
+    domain: ParsedDomain,
+    body: { name: string; redirect?: string; redirectStatusCode?: number },
+    redirect?: { redirect: string; redirectStatusCode: number },
+  ) {
+    const { status, json } = await this.call<VercelProjectDomain>("POST", `/v10${this.project()}`, body);
     if (status === 200) return { challenges: json.verification ?? [] };
     if (status === 409) {
       throw new AppError(
         "CONFLICT",
-        "This domain is already connected to another website. Remove it there first.",
+        `${domain.hostname} is already connected to another website. Remove it there first.`,
         "hostname",
       );
     }
     // Already on the project (e.g. a previous attempt): just read its state.
     if (status === 400 && /already/i.test(json.error?.message ?? "")) {
-      const existing = await this.call<VercelProjectDomain>("GET", `/v9${this.project(`/${domain.hostname}`)}`);
+      const path = `/v9${this.project(`/${domain.hostname}`)}`;
+      const existing = await this.call<VercelProjectDomain>("GET", path);
+      if (redirect && existing.json.redirect !== redirect.redirect) {
+        const patched = await this.call<VercelProjectDomain>("PATCH", path, redirect);
+        if (patched.status !== 200) {
+          console.error("Vercel redirect update failed", patched.status, patched.json.error);
+          throw new AppError("INVALID", `Couldn't set up ${domain.hostname}. Please try again.`);
+        }
+      }
       return { challenges: existing.json.verification ?? [] };
     }
     console.error("Vercel add domain failed", status, json.error);
@@ -137,6 +164,11 @@ class DnsProvider implements DomainProvider {
   private resolver = new Resolver({ timeout: 5_000, tries: 2 });
 
   async add() {
+    return { challenges: [] };
+  }
+
+  // The proxy forwards the paired host itself (src/proxy.ts).
+  async addRedirect() {
     return { challenges: [] };
   }
 

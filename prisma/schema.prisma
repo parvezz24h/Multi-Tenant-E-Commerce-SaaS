@@ -368,19 +368,23 @@ model SubscriptionInvoice {
 
 /// A merchant's own domain (e.g. www.rahimfashion.com). One per store for now.
 model StoreDomain {
-  id            String       @id @default(cuid())
-  storeId       String       @unique
+  id             String       @id @default(cuid())
+  storeId        String       @unique
   /// Lowercase, punycode, no port or trailing dot.
-  hostname      String       @unique
-  status        DomainStatus @default(PENDING)
+  hostname       String       @unique
+  status         DomainStatus @default(PENDING)
   /// DNS records the merchant must create, as last computed for display.
-  records       Json?
-  lastCheckedAt DateTime?
-  verifiedAt    DateTime?
+  records        Json?
+  lastCheckedAt  DateTime?
+  verifiedAt     DateTime?
   /// Why the last check failed, in plain language.
-  lastError     String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  lastError      String?
+  /// The paired www/apex host (see redirectDomainFor) forwards here.
+  redirectActive Boolean      @default(false)
+  /// Why the paired host isn't forwarding yet, in plain language.
+  redirectError  String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 

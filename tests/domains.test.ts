@@ -2,8 +2,9 @@ import { domainToASCII } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { pairedHost } from "@/lib/custom-domain-lookup";
 import { isPlatformHost, normalizeHost } from "@/lib/hosts";
-import { dnsRecordsFor, parseCustomDomain } from "@/server/domains/hostname";
+import { dnsRecordsFor, parseCustomDomain, redirectDomainFor } from "@/server/domains/hostname";
 
 const ROOT = "shopcreatorbd.vercel.app";
 const targets = { cname: "cname.vercel-dns.com", aRecord: "76.76.21.21" };
@@ -74,6 +75,42 @@ describe("dnsRecordsFor", () => {
       purpose: "verification",
     });
   });
+});
+
+describe("redirectDomainFor", () => {
+  it("pairs www with the apex, both ways", () => {
+    expect(redirectDomainFor(parsed("www.motkhola.com"))).toEqual({
+      hostname: "motkhola.com",
+      apex: "motkhola.com",
+      subdomain: "",
+    });
+    expect(redirectDomainFor(parsed("rahim.com.bd"))).toEqual({
+      hostname: "www.rahim.com.bd",
+      apex: "rahim.com.bd",
+      subdomain: "www",
+    });
+  });
+
+  it("leaves other subdomains alone", () => {
+    expect(redirectDomainFor(parsed("shop.rahim.com"))).toBeNull();
+  });
+
+  it("adds the forwarding record and de-duplicates shared TXT challenges", () => {
+    const domain = parsed("www.motkhola.com");
+    const challenge = { type: "TXT", domain: "_vercel.motkhola.com", value: "vc-domain-verify=abc" };
+    expect(dnsRecordsFor(domain, targets, [challenge, challenge], redirectDomainFor(domain))).toEqual([
+      { type: "CNAME", name: "www", value: "cname.vercel-dns.com", purpose: "routing" },
+      { type: "A", name: "@", value: "76.76.21.21", purpose: "redirect" },
+      { type: "TXT", name: "_vercel", value: "vc-domain-verify=abc", purpose: "verification" },
+    ]);
+  });
+});
+
+describe("pairedHost", () => {
+  it.each([
+    ["motkhola.com", "www.motkhola.com"],
+    ["www.motkhola.com", "motkhola.com"],
+  ])("%s ↔ %s", (host, paired) => expect(pairedHost(host)).toBe(paired));
 });
 
 describe("isPlatformHost", () => {

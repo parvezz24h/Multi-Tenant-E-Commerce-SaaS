@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, ExternalLink, Lock } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, ExternalLink, Lock } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -138,6 +138,31 @@ export default async function DomainPage({ params }: PageProps<"/dashboard/[stor
               )
             )}
 
+            {domain.redirectHostname && (
+              <div className="grid gap-1 rounded-lg border p-3 text-sm">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">{domain.redirectHostname}</span>
+                  <ArrowRight className="size-3.5 text-muted-foreground" aria-label="forwards to" />
+                  <span className="text-muted-foreground">{domain.hostname}</span>
+                  {domain.redirectActive ? (
+                    <Badge className="bg-emerald-600 text-white">
+                      <CheckCircle2 /> Forwarding
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">
+                      <Clock /> Waiting for DNS
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-muted-foreground">
+                  {domain.redirectActive
+                    ? `Visitors who type ${domain.redirectHostname} are sent to ${domain.hostname}.`
+                    : (domain.redirectError ??
+                      `Add the record marked “forwarding” below so ${domain.redirectHostname} works too.`)}
+                </p>
+              </div>
+            )}
+
             <div className="grid gap-3">
               <div>
                 <h3 className="font-medium">DNS records</h3>
@@ -161,8 +186,10 @@ export default async function DomainPage({ params }: PageProps<"/dashboard/[stor
                       <TableRow key={`${r.type}-${r.name}-${r.value}`}>
                         <TableCell className="font-mono text-xs">
                           {r.type}
-                          {r.purpose === "verification" && (
-                            <div className="font-sans text-[11px] text-muted-foreground">ownership</div>
+                          {r.purpose !== "routing" && (
+                            <div className="font-sans text-[11px] text-muted-foreground">
+                              {r.purpose === "verification" ? "ownership" : "forwarding"}
+                            </div>
                           )}
                         </TableCell>
                         <TableCell>

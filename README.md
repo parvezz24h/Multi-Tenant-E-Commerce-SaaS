@@ -60,6 +60,12 @@ which is enough for local development. Merchants add a CNAME
 (`cname.vercel-dns.com`) for subdomains like `www`, or an A record
 (`76.76.21.21`) for root domains; Vercel may also ask for a TXT ownership record.
 
+`www` and the root domain are paired: connecting `www.shop.com` also adds `shop.com`
+to the Vercel project as a 308 redirect to `www.shop.com` (and the other way round),
+and the dashboard lists the record for both. Domains connected earlier pick this up
+on their next "Check now". Requests for the paired host that still reach the app are
+redirected by `src/proxy.ts`.
+
 Store subdomains (`<slug>.<root domain>`) need a domain you own with a wildcard
 record; they don't work on `*.vercel.app`.
 

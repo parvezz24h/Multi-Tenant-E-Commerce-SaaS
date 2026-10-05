@@ -1,7 +1,7 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { storeSlugForCustomDomain } from "@/lib/custom-domain-lookup";
+import { lookupCustomDomain } from "@/lib/custom-domain-lookup";
 import { isPlatformHost, normalizeHost, storeSlugFromHost } from "@/lib/hosts";
 
 /** Internal prefix storefront routes live under (src/app/s/[storeSlug]). */
@@ -27,10 +27,20 @@ export async function proxy(request: NextRequest) {
   const subdomainSlug = storeSlugFromHost(host);
   if (subdomainSlug) return rewriteToStore(request, subdomainSlug);
 
-  // 2. Merchant custom domains: anything that isn't a platform host.
+  // 2. Merchant custom domains: anything that isn't a platform host. The
+  // www/apex pair of a connected domain redirects to it (Vercel usually does
+  // this at the edge; this covers requests that still reach us).
   if (!isPlatformHost(host)) {
-    const slug = await storeSlugForCustomDomain(normalizeHost(host));
-    if (slug) return rewriteToStore(request, slug);
+    const hostname = normalizeHost(host);
+    const match = await lookupCustomDomain(hostname);
+    if (match && match.hostname !== hostname) {
+      const url = request.nextUrl.clone();
+      url.protocol = "https:";
+      url.host = match.hostname;
+      url.port = "";
+      return NextResponse.redirect(url, 308);
+    }
+    if (match) return rewriteToStore(request, match.slug);
     return new NextResponse("This domain isn't connected to a store.", {
       status: 404,
       headers: { "content-type": "text/plain; charset=utf-8" },
