@@ -198,6 +198,7 @@ model Store {
   members      StoreMember[]
   auditLogs    AuditLog[]
   theme        StoreTheme?
+  heroSlides   HeroSlide[]
   categories   Category[]
   products     Product[]
   carts        Cart[]
@@ -245,6 +246,30 @@ model StoreTheme {
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   @@map("store_themes")
+}
+
+/// A slide in the storefront homepage slider. Without active slides the
+/// theme shows its single hero (StoreTheme.heroTitle etc.).
+model HeroSlide {
+  id          String   @id @default(cuid())
+  storeId     String
+  imageUrl    String
+  /// Object key in file storage.
+  storageKey  String
+  title       String?
+  subtitle    String?
+  buttonLabel String?
+  /// Store path ("/products/…") or https URL the slide links to.
+  linkUrl     String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, sortOrder])
+  @@map("hero_slides")
 }
 
 // ─────────────────────────────────────────────────────────────

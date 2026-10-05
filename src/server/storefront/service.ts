@@ -31,6 +31,11 @@ const storeSelect = {
   deliveryChargeInsideDhaka: true,
   deliveryChargeOutsideDhaka: true,
   theme: true,
+  heroSlides: {
+    where: { isActive: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { id: true, imageUrl: true, title: true, subtitle: true, buttonLabel: true, linkUrl: true },
+  },
 } satisfies Prisma.StoreSelect;
 
 export type StorefrontStore = Prisma.StoreGetPayload<{ select: typeof storeSelect }>;

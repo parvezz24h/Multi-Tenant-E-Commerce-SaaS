@@ -5,7 +5,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { ThemeHeroProps } from "@/themes/types";
 
-export function ModernHero({ theme }: ThemeHeroProps) {
+import { ModernHeroSlider } from "./hero-slider";
+
+export function ModernHero({ store, theme }: ThemeHeroProps) {
+  if (store.heroSlides.length > 0) {
+    return <ModernHeroSlider slides={store.heroSlides} storeName={store.name} />;
+  }
+
   const hasImage = Boolean(theme.heroImageUrl);
 
   return (

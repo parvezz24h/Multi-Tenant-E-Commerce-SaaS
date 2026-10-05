@@ -146,7 +146,10 @@ export function StoreDesignForm({ storeId, themes, defaults, placeholders }: Pro
       <Card>
         <CardHeader>
           <CardTitle>Homepage</CardTitle>
-          <CardDescription>Leave a field empty to use the default shown.</CardDescription>
+          <CardDescription>
+            Leave a field empty to use the default shown. The hero appears when the slider has no visible
+            slides.
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <FormField id="announcement" label="Announcement bar" errors={errors.announcement}>

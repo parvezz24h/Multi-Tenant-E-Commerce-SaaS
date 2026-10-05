@@ -30,6 +30,10 @@ export type ThemeFooterProps = {
 /** Reassurance strip (COD, delivery, tracking) shown under the hero. */
 export type ThemeTrustBarProps = { store: StorefrontStore };
 
+/** An active slide of the store's homepage slider. */
+export type ThemeHeroSlide = StorefrontStore["heroSlides"][number];
+
+/** Themes show `store.heroSlides` as a slider, or a single hero when there are none. */
 export type ThemeHeroProps = { store: StorefrontStore; theme: ResolvedTheme };
 
 export type ThemeProductCardProps = { product: StorefrontProductCard };
