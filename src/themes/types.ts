@@ -38,8 +38,6 @@ export type ThemeHeroProps = { store: StorefrontStore; theme: ResolvedTheme };
 
 export type ThemeProductCardProps = { product: StorefrontProductCard };
 
-export type ThemeCategoryListProps = { categories: StorefrontCategory[] };
-
 /**
  * A ready-made theme: a set of reusable components plus defaults. Stores
  * pick a theme and override its settings; they never edit its markup.
@@ -57,7 +55,6 @@ export type ThemeDefinition = {
     Footer: ComponentType<ThemeFooterProps>;
     Hero: ComponentType<ThemeHeroProps>;
     ProductCard: ComponentType<ThemeProductCardProps>;
-    CategoryList: ComponentType<ThemeCategoryListProps>;
     TrustBar: ComponentType<ThemeTrustBarProps>;
   };
 };

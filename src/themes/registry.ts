@@ -1,7 +1,6 @@
 import { HEX_COLOR, readableForeground } from "@/lib/color";
 import type { StorefrontStore } from "@/server/storefront/service";
 
-import { ModernCategoryList } from "./modern/category-list";
 import { ModernFooter } from "./modern/footer";
 import { ModernHeader } from "./modern/header";
 import { ModernHero } from "./modern/hero";
@@ -22,7 +21,6 @@ const modern: ThemeDefinition = {
     Footer: ModernFooter,
     Hero: ModernHero,
     ProductCard: ModernProductCard,
-    CategoryList: ModernCategoryList,
     TrustBar: ModernTrustBar,
   },
 };
