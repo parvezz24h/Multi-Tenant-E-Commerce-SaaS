@@ -33,7 +33,7 @@ export async function SidebarShell({
             <div className="min-w-0 flex-1">{topbar}</div>
             {topbarEnd}
           </header>
-          <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-6">{children}</div>
+          <div className="w-full flex-1 px-4 py-6 md:px-6 lg:px-8">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </TooltipProvider>
